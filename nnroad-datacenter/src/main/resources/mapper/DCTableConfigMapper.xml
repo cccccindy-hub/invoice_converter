@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableConfigMapper">
+
+    <resultMap type="com.nnroad.datacenter.domain.DCTableConfig" id="DCTableConfigResult">
+        <result property="columnId"    column="column_id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="columnParentDbname"    column="column_parent_dbName"    />
+        <result property="columnType"    column="column_type"    />
+        <result property="columnEnName"    column="column_en_name"/>
+        <result property="columnName"    column="column_name"    />
+        <result property="columnSort"    column="column_sort"    />
+        <result property="columnDbname"    column="column_dbName"    />
+        <result property="columnDbtype"    column="column_dbType"    />
+        <result property="columnDblength"    column="column_dbLength"    />
+        <result property="columnInputMethod"    column="column_input_method"    />
+        <result property="columnDefault"    column="column_default"    />
+        <result property="columnFormate"    column="column_formate"    />
+        <result property="columnDictid"    column="column_dictId"    />
+        <result property="columnDictchosetype"    column="column_dictChoseType"    />
+        <result property="columnFormula"    column="column_formula"    />
+        <result property="columnIsrequired"    column="column_isRequired"    />
+        <result property="columnIsindex"    column="column_isIndex"    />
+        <result property="columnIsquery"    column="column_isQuery"    />
+        <result property="columnQueryaction"    column="column_queryAction"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="parentName" column="parent_name" />
+        <result property="columnIsonly"    column="column_isonly"    />
+        <result property="columnHideFromTempl"    column="column_hideFromTempl"    />
+        <result property="columnChooseType"    column="column_choose_type"    />
+        <collection property="dictList" javaType="java.util.List" resultMap="dictListResult"/>
+    </resultMap>
+    <!--<result property="parentDbName"    column="update_time"    />-->
+    <resultMap id="dictListResult" type="com.nnroad.common.core.domain.entity.SysDictData">
+        <result property="dictCode" column="dict_code"/>
+        <result property="dictLabel" column="dict_label"/>
+        <result property="dictValue" column="dict_value"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <sql id="selectDCTableConfigVo">
+        select t.column_id, t.table_id, t.column_parent_dbName, t.column_type, t.`column_name`,t.column_en_name, t.column_sort, t.column_dbName, t.column_dbType, t.column_dbLength, t.column_input_method,t.column_default, t.column_formate, t.column_dictId, t.column_dictChoseType, t.column_formula, t.column_isRequired, t.column_isIndex, t.column_isQuery, t.del_flag, t.column_queryAction, t.create_by, t.create_time, t.update_by, t.update_time, t.column_isonly, t.column_hideFromTempl, t.column_choose_type,
+               dict.dict_code,
+            dict.dict_label,
+            dict.dict_value,
+            dict.dict_type,
+            dict.is_default,
+            dict.status from dc_table_config t
+            left join dc_dict_data dict on t.column_dictId = dict.dict_type
+    </sql>
+
+
+    <select id="selectDCTableConfigList" parameterType="com.nnroad.datacenter.domain.DCTableConfig" resultMap="DCTableConfigResult">
+        <include refid="selectDCTableConfigVo"/>
+        <where>
+            <if test="tableId != null "> and table_id = #{tableId}</if>
+            <if test="columnParentDbname != null "> and column_parent_dbName like concat('%', #{columnParentDbname}, '%')</if>
+            <if test="columnType != null "> and column_type = #{columnType}</if>
+            <if test="columnName != null  and columnName != ''"> and column_name like concat('%', #{columnName}, '%')</if>
+            <if test="columnSort != null "> and column_sort = #{columnSort}</if>
+            <if test="columnDbname != null  and columnDbname != ''"> and column_dbName like concat('%', #{columnDbname}, '%')</if>
+            <if test="columnDbtype != null "> and column_dbType = #{columnDbtype}</if>
+            <if test="columnDblength != null "> and column_dbLength = #{columnDblength}</if>
+            <if test="columnInputMethod != null "> and column_input_method = #{columnInputMethod}</if>
+            <if test="columnFormate != null  and columnFormate != ''"> and column_formate = #{columnFormate}</if>
+            <if test="columnDictid != null  and columnDictid != ''"> and column_dictId = #{columnDictid}</if>
+            <if test="columnDictchosetype != null "> and column_dictChoseType = #{columnDictchosetype}</if>
+            <if test="columnFormula != null  and columnFormula != ''"> and column_formula = #{columnFormula}</if>
+            <if test="columnIsrequired != null "> and column_isRequired = #{columnIsrequired}</if>
+            <if test="columnIsindex != null "> and column_isIndex = #{columnIsindex}</if>
+            <if test="columnIsquery != null "> and column_isQuery = #{columnIsquery}</if>
+            <if test="columnQueryaction != null "> and column_queryAction = #{columnQueryaction}</if>
+            <if test="columnIsonly != null "> and column_isonly = #{columnIsonly}</if>
+            <if test="columnHideFromTempl != null "> and column_hideFromTempl = #{columnHideFromTempl}</if>
+            <if test="columnChooseType != null "> and column_choose_type = #{columnChooseType}</if>
+        </where>
+        order by column_sort
+    </select>
+    
+    <select id="selectDCTableConfigById" parameterType="Long" resultMap="DCTableConfigResult">
+        <include refid="selectDCTableConfigVo"/>
+        where column_id = #{columnId}
+    </select>
+
+    <insert id="insertDCTableConfig" parameterType="com.nnroad.datacenter.domain.DCTableConfig" useGeneratedKeys="true" keyProperty="columnId">
+        insert into dc_table_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="columnParentDbname != null">column_parent_dbName,</if>
+            <if test="columnType != null">column_type,</if>
+            <if test="columnEnName != null and columnEnName != ''">`column_en_name`,</if>
+            <if test="columnName != null and columnName != ''">`column_name`,</if>
+            <if test="columnSort != null">column_sort,</if>
+            <if test="columnDbname != null">column_dbName,</if>
+            <if test="columnDbtype != null">column_dbType,</if>
+            <if test="columnDblength != null">column_dbLength,</if>
+            <if test="columnInputMethod != null">column_input_method,</if>
+            <if test="columnDefault != null and columnDefault!=''">column_default,</if>
+            <if test="columnFormate != null">column_formate,</if>
+            <if test="columnDictid != null">column_dictId,</if>
+            <if test="columnDictchosetype != null">column_dictChoseType,</if>
+            <if test="columnFormula != null">column_formula,</if>
+            <if test="columnIsrequired != null">column_isRequired,</if>
+            <if test="columnIsindex != null">column_isIndex,</if>
+            <if test="columnIsquery != null">column_isQuery,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="columnQueryaction != null">column_queryAction,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="columnIsonly != null">column_isonly,</if>
+            <if test="columnHideFromTempl != null">column_hideFromTempl,,</if>
+            <if test="columnChooseType != null">column_choose_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="columnParentDbname != null">#{columnParentDbname},</if>
+            <if test="columnType != null">#{columnType},</if>
+            <if test="columnEnName != null and columnEnName != ''">#{columnEnName},</if>
+            <if test="columnName != null and columnName != ''">#{columnName},</if>
+            <if test="columnSort != null">#{columnSort},</if>
+            <if test="columnDbname != null">#{columnDbname},</if>
+            <if test="columnDbtype != null">#{columnDbtype},</if>
+            <if test="columnDblength != null">#{columnDblength},</if>
+            <if test="columnInputMethod != null">#{columnInputMethod},</if>
+            <if test="columnDefault != null and columnDefault!=''">#{columnDefault},</if>
+            <if test="columnFormate != null">#{columnFormate},</if>
+            <if test="columnDictid != null">#{columnDictid},</if>
+            <if test="columnDictchosetype != null">#{columnDictchosetype},</if>
+            <if test="columnFormula != null">#{columnFormula},</if>
+            <if test="columnIsrequired != null">#{columnIsrequired},</if>
+            <if test="columnIsindex != null">#{columnIsindex},</if>
+            <if test="columnIsquery != null">#{columnIsquery},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="columnQueryaction != null">#{columnQueryaction},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="columnIsonly != null">#{columnIsonly},</if>
+            <if test="columnHideFromTempl != null">#{columnHideFromTempl},</if>
+            <if test="columnChooseType != null">#{columnChooseType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDCTableConfig" parameterType="com.nnroad.datacenter.domain.DCTableConfig">
+        update dc_table_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="columnParentDbname != null">column_parent_dbName = #{columnParentDbname},</if>
+            <if test="columnType != null">column_type = #{columnType},</if>
+            <if test="columnEnName != null and columnEnName != ''">`column_en_name` = #{columnEnName},</if>
+            <if test="columnName != null and columnName != ''">`column_name` = #{columnName},</if>
+            <if test="columnSort != null">column_sort = #{columnSort},</if>
+            <if test="columnDbname != null">column_dbName = #{columnDbname},</if>
+            <if test="columnDbtype != null">column_dbType = #{columnDbtype},</if>
+            <if test="columnDblength != null">column_dbLength = #{columnDblength},</if>
+            <if test="columnInputMethod != null">column_input_method = #{columnInputMethod},</if>
+            <if test="columnFormate != null">column_formate = #{columnFormate},</if>
+            <if test="columnDictid != null">column_dictId = #{columnDictid},</if>
+            <if test="columnDictchosetype != null">column_dictChoseType = #{columnDictchosetype},</if>
+            <if test="columnDefault != null and columnDefault!=''">column_default = #{columnDefault},</if>
+            <if test="columnFormula != null">column_formula = #{columnFormula},</if>
+            <if test="columnIsrequired != null">column_isRequired = #{columnIsrequired},</if>
+            <if test="columnIsindex != null">column_isIndex = #{columnIsindex},</if>
+            <if test="columnIsquery != null">column_isQuery = #{columnIsquery},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="columnQueryaction != null">column_queryAction = #{columnQueryaction},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="columnIsonly != null">column_isonly = #{columnIsonly},</if>
+            <if test="columnHideFromTempl != null">column_hideFromTempl = #{columnHideFromTempl},</if>
+            <if test="columnChooseType != null">column_choose_type = #{columnChooseType},</if>
+        </trim>
+        where column_id = #{columnId}
+    </update>
+
+    <delete id="deleteDCTableConfigById" parameterType="Long">
+        delete from dc_table_config where column_id = #{columnId}
+    </delete>
+
+    <delete id="deleteDCTableConfigByIds" parameterType="String">
+        delete from dc_table_config where column_id in
+        <foreach item="columnId" collection="array" open="(" separator="," close=")">
+            #{columnId}
+        </foreach>
+    </delete>
+    <delete id="deleteDCTableConfigBytableId" parameterType="Long">
+        delete from dc_table_config where table_id = #{tableId}
+    </delete>
+
+    <select id="selectByTableId" parameterType="Long" resultMap="DCTableConfigResult">
+        <include refid="selectDCTableConfigVo"/>
+        where table_id = #{tableId}
+        order by column_sort
+
+
+    </select>
+
+    <select id="selectCountByParentId" resultType="Integer">
+        select count(1) from dc_table_config where column_parent_dbName=#{columnId}
+    </select>
+    <select id="selectParamIsExist" parameterType="com.nnroad.datacenter.domain.DCTableConfig" resultMap="DCTableConfigResult">
+        <include refid="selectDCTableConfigVo"/>
+        where column_dbName = #{columnDbname}  and  table_id = #{tableId}
+        and column_type &lt;&gt; 1
+        <if test="columnId != null">
+            and column_id &lt;&gt; #{columnId}
+        </if>
+    </select>
+
+
+    <select id="selectTableColumnsByTableId" parameterType="Long" resultMap="DCTableConfigResult">
+        <include refid="selectDCTableConfigVo"/>
+        where table_id = #{tableId}
+        and column_type = 0
+    </select>
+
+    <select id="selectAllResultByTableId" parameterType="Long" resultMap="DCTableConfigResult">
+        select t.column_id, t.table_id, t.column_parent_dbName, t.column_type, t.column_name,t.column_en_name, t.column_sort, t.column_dbName, t.column_dbType, t.column_dbLength, t.column_input_method, t.column_formate, t.column_dictId, t.column_dictChoseType, t.column_formula, t.column_isRequired, t.column_isIndex, t.column_isQuery, t.column_queryAction, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time,t.column_isonly, t.column_hideFromTempl, p.column_dbName,t.column_choose_type as parent_name,t.column_choose_type
+        from dc_table_config t
+        left join dc_table_config p on p.column_id = t.column_parent_dbName
+        where t.table_id = #{tableId}
+    </select>
+
+    <insert id="insertBatch" parameterType="list" useGeneratedKeys="true" keyProperty="columnId" >
+        INSERT INTO dc_table_config
+            (
+             table_id,column_parent_dbName,column_type,
+             `column_name`,`column_en_name`,column_sort,
+             column_dbName,column_dbType,column_dbLength,
+             column_input_method,column_formate,column_default,column_dictId,
+             column_dictChoseType,column_formula,column_isRequired,
+             column_isIndex,column_isQuery,column_queryAction,column_isonly,column_hideFromTempl,column_choose_type
+             )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+             #{item.tableId},#{item.columnParentDbname},#{item.columnType},
+             #{item.columnName},#{item.columnEnName},#{item.columnSort},
+             #{item.columnDbname},#{item.columnDbtype},#{item.columnDblength},
+             #{item.columnInputMethod},#{item.columnFormate},#{item.columnDefault},#{item.columnDictid},
+             #{item.columnDictchosetype},#{item.columnFormula},#{item.columnIsrequired},
+             #{item.columnIsindex},#{item.columnIsquery},#{item.columnQueryaction},#{item.columnIsonly},#{item.columnHideFromTempl},#{item.columnChooseType}
+             )
+        </foreach>
+    </insert>
+
+    <insert id="insertBatchWithId" parameterType="list" useGeneratedKeys="true" >
+        insert into dc_table_config
+            (
+            column_id,table_id,column_parent_dbName,column_type,
+            `column_name`,column_en_name,column_sort,column_dbName,
+             column_dbType,column_dbLength,column_input_method,column_formate,column_default,
+             column_dictId,column_dictChoseType,column_formula,column_isRequired,
+             column_isIndex,column_isQuery,column_queryAction,column_isonly,column_hideFromTempl,column_choose_type)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+             #{item.columnId},#{item.tableId},#{item.columnParentDbname},#{item.columnType},
+             #{item.columnName},#{item.columnEnName},#{item.columnSort},#{item.columnDbname},
+             #{item.columnDbtype},#{item.columnDblength},#{item.columnInputMethod},#{item.columnFormate},#{item.columnDefault},
+             #{item.columnDictid},#{item.columnDictchosetype},#{item.columnFormula},#{item.columnIsrequired},
+             #{item.columnIsindex},#{item.columnIsquery},#{item.columnQueryaction},#{item.columnIsonly},#{item.columnHideFromTempl},#{item.columnChooseType}
+             )
+        </foreach>
+    </insert>
+
+
+</mapper>

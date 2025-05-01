@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.payroll.mapper.PayrollOtherTableMapper">
+    
+    <resultMap type="PayrollOtherTable" id="PayrollOtherTableResult">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="tableName"    column="table_name"    />
+        <result property="formulaTableName"    column="formula_table_name"    />
+        <result property="data"    column="data"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPayrollOtherTableVo">
+        select id, table_id, table_name, formula_table_name, data, remark, create_by, create_time, update_by, update_time from payroll_other_table
+    </sql>
+
+    <select id="selectPayrollOtherTableList" parameterType="PayrollOtherTable" resultMap="PayrollOtherTableResult">
+        <include refid="selectPayrollOtherTableVo"/>
+        <where>  
+            <if test="tableId != null "> and table_id = #{tableId}</if>
+            <if test="tableName != null  and tableName != ''"> and table_name like concat('%', #{tableName}, '%')</if>
+            <if test="formulaTableName != null  and formulaTableName != ''"> and formula_table_name like concat('%', #{formulaTableName}, '%')</if>
+            <if test="data != null  and data != ''"> and data = #{data}</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </where>
+    </select>
+    
+    <select id="selectPayrollOtherTableById" parameterType="Long" resultMap="PayrollOtherTableResult">
+        <include refid="selectPayrollOtherTableVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectBySql" parameterType="String" resultType="Map">
+        ${sql}
+    </select>
+    <select id="getDataCount" resultType="java.lang.Long">
+        ${sql}
+    </select>
+
+    <insert id="insertPayrollOtherTable" parameterType="PayrollOtherTable">
+        insert into payroll_other_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="tableName != null">table_name,</if>
+            <if test="formulaTableName != null">formula_table_name,</if>
+            <if test="data != null">data,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="tableName != null">#{tableName},</if>
+            <if test="formulaTableName != null">#{formulaTableName},</if>
+            <if test="data != null">#{data},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePayrollOtherTable" parameterType="PayrollOtherTable">
+        update payroll_other_table
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="tableName != null">table_name = #{tableName},</if>
+            <if test="formulaTableName != null">formula_table_name = #{formulaTableName},</if>
+            <if test="data != null">data = #{data},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePayrollOtherTableById" parameterType="Long">
+        delete from payroll_other_table where id = #{id}
+    </delete>
+
+    <delete id="deletePayrollOtherTableByIds" parameterType="String">
+        delete from payroll_other_table where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

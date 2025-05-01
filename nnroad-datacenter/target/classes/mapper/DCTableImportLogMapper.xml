@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableImportLogMapper">
+    
+    <resultMap type="com.nnroad.datacenter.domain.DCTableImportLog" id="DCTableImportLogResult">
+        <result property="opId"    column="op_id"    />
+        <result property="roleName"    column="role_name"    />
+        <result property="inputFileName"    column="input_file_name"    />
+        <result property="opType"    column="op_type"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="status"    column="status"    />
+        <result property="file_path"    column="file_path"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="groupIds"    column="group_ids"    />
+        <result property="batchId"    column="batch_id"    />
+        <result property="batchCode"    column="batch_code"    />
+        <result property="errorMsg"    column="error_msg"    />
+    </resultMap>
+
+    <sql id="selectDCTableImportLogVo">
+        select
+               op_id,
+               role_name,
+               input_file_name,
+               op_type,
+               status,
+               file_path,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               group_ids,
+               batch_id,
+               batch_code
+        from
+             dc_table_import_log
+    </sql>
+
+    <select id="selectDCTableImportLogList" parameterType="DCTableImportLog" resultMap="DCTableImportLogResult">
+        <include refid="selectDCTableImportLogVo"/>
+        <where>  
+            <if test="roleName != null  and roleName != ''"> and role_name like concat('%', #{roleName}, '%')</if>
+            <if test="inputFileName != null  and inputFileName != ''"> and input_file_name like concat('%', #{inputFileName}, '%')</if>
+            <if test="opType != null  and opType != ''"> and op_type = #{opType}</if>
+            <if test="groupIds != null  and groupIds != ''"> and group_ids = #{groupIds}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectDCTableImportLogById" parameterType="Long" resultMap="DCTableImportLogResult">
+        select
+            op_id,
+            role_name,
+            input_file_name,
+            op_type,
+            status,
+            file_path,
+            del_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            group_ids,
+            batch_id,
+            batch_code,error_msg
+        from
+            dc_table_import_log
+        where op_id = #{opId}
+    </select>
+        
+    <insert id="insertDCTableImportLog" parameterType="DCTableImportLog" useGeneratedKeys="true" keyProperty="opId">
+        insert into dc_table_import_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName != null">role_name,</if>
+            <if test="inputFileName != null">input_file_name,</if>
+            <if test="opType != null">op_type,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="status != null">status,</if>
+            <if test="file_path != null">file_path,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="groupIds != null">group_ids,</if>
+            <if test="batchId != null and batchId != ''">batch_id,</if>
+            <if test="batchCode != null and batchCode != ''">batch_code,</if>
+            <if test="errorMsg != null and errorMsg != ''">error_msg,</if>
+
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleName != null">#{roleName},</if>
+            <if test="inputFileName != null">#{inputFileName},</if>
+            <if test="opType != null">#{opType},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="status != null">#{status},</if>
+            <if test="file_path != null">#{file_path},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="groupIds != null">#{groupIds},</if>
+            <if test="batchId != null and batchId != ''">#{batchId},</if>
+            <if test="batchCode != null and batchCode != ''">#{batchCode},</if>
+            <if test="errorMsg != null and errorMsg != ''">#{errorMsg},</if>
+
+        </trim>
+    </insert>
+
+    <update id="updateDCTableImportLog" parameterType="DCTableImportLog">
+        update dc_table_import_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="inputFileName != null">input_file_name = #{inputFileName},</if>
+            <if test="opType != null">op_type = #{opType},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="status != null">#{status},</if>
+            <if test="file_path != null">#{file_path},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="groupIds != null">group_ids = #{groupIds},</if>
+            <if test="batchId != null and batchId != ''">batch_id = #{batchId},</if>
+            <if test="batchCode != null and batchCode != ''">batch_code = #{batchCode},</if>
+            <if test="errorMsg != null and errorMsg != ''">error_msg = #{errorMsg},</if>
+
+        </trim>
+        where op_id = #{opId}
+    </update>
+
+    <delete id="deleteDCTableImportLogById" parameterType="Long">
+        delete from dc_table_import_log where op_id = #{opId}
+    </delete>
+
+    <delete id="deleteDCTableImportLogByIds" parameterType="String">
+        delete from dc_table_import_log where op_id in
+        <foreach item="opId" collection="array" open="(" separator="," close=")">
+            #{opId}
+        </foreach>
+    </delete>
+    <update id="updateByBatchID">
+        update dc_table_import_log  SET status  = 3  WHERE  batch_id = #{batchId}
+    </update>
+</mapper>

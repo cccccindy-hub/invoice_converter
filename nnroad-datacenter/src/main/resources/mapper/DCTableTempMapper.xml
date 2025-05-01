@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableTempMapper">
+
+    <resultMap type="com.nnroad.datacenter.domain.DCTableTemp" id="DCTableTempResult">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="tableName"    column="table_name"    />
+        <result property="tableEnName"    column="table_en_name"    />
+        <result property="tableDbName"    column="table_db_name"    />
+        <result property="tableLiveTime"    column="table_live_time"    />
+        <result property="tableRemark"    column="table_remark"    />
+        <result property="tableStatus"    column="table_status"    />
+        <result property="tableType"    column="table_type"    />
+        <result property="tableSyn"    column="table_syn"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="groupIds"    column="group_ids"    />
+        <result property="importStart"    column="import_start"    />
+        <result property="importType"    column="import_type"    />
+        <result property="importSpecialColumn"    column="import_special_column"    />
+        <result property="importSpecialColumnType"    column="import_special_column_type"    />
+        <result property="importSpecialColumnWhere"    column="import_special_column_where"    />
+        <result property="importRequireColumn"    column="import_require_column"    />
+        <result property="importSheetName"    column="import_sheet_name"    />
+        <result property="tableDataHasAuth"    column="table_data_has_auth"    />
+        <result property="dataSourceId"    column="data_source_id"    />
+        <result property="tableAutomaticEntry"    column="table_automatic_entry"    />
+        <result property="quickEntryTableId"    column="quick_entry_table_id"    />
+    </resultMap>
+
+    <sql id="selectDCTableTempVo">
+        select id, table_id, `table_name`,table_en_name, table_db_name, table_live_time, table_remark, table_status,table_type, table_syn, del_flag, create_by, create_time, update_by, update_time, group_ids, import_start, import_type, import_special_column, import_special_column_type, import_special_column_where,import_require_column, import_sheet_name,table_data_has_auth
+        ,data_source_id,table_automatic_entry , quick_entry_table_id  from dc_table_temp
+    </sql>
+
+    <select id="selectDCTableTempList" parameterType="com.nnroad.datacenter.domain.DCTableTemp" resultMap="DCTableTempResult">
+        <include refid="selectDCTableTempVo"/>
+        <where>
+            <if test="tableName != null  and tableName != ''"> and `table_name` like concat('%', #{tableName}, '%')</if>
+            <if test="tableDbName != null  and tableDbName != ''"> and table_db_name like concat('%', #{tableDbName}, '%')</if>
+            <if test="tableLiveTime != null "> and table_live_time = #{tableLiveTime}</if>
+            <if test="tableRemark != null  and tableRemark != ''"> and table_remark = #{tableRemark}</if>
+            <if test="tableStatus != null "> and table_status = #{tableStatus}</if>
+            <if test="tableType != null "> and table_type = #{tableType}</if>
+            <if test="tableSyn != null "> and table_syn = #{tableSyn}</if>
+            <if test="userId != null  and userId != ''"> and FIND_IN_SET(#{userId},group_ids)</if>
+            <if test="importStart != null "> and import_start = #{importStart}</if>
+            <if test="importType != null "> and import_type = #{importType}</if>
+            <if test="importSpecialColumn != null  and importSpecialColumn != ''"> and import_special_column = #{importSpecialColumn}</if>
+            <if test="importSpecialColumnType != null "> and import_special_column_type = #{importSpecialColumnType}</if>
+            <if test="importSpecialColumnWhere != null  and importSpecialColumnWhere != ''"> and import_special_column_where = #{importSpecialColumnWhere}</if>
+            <if test="importRequireColumn != null  and importRequireColumn != ''"> and import_require_column = #{importRequireColumn}</if>
+            <if test="importSheetName != null  and importSheetName != ''"> and import_sheet_name like concat('%', #{importSheetName}, '%')</if>
+            <if test="tableDataHasAuth != null "> and table_data_has_auth = #{tableDataHasAuth}</if>
+            <if test="dataSourceId != null "> and data_source_id = #{dataSourceId}</if>
+            <if test="tableAutomaticEntry != null "> and table_automatic_entry = #{tableAutomaticEntry}</if>
+            <if test="quickEntryTableId != null  and quickEntryTableId != ''"> and quick_entry_table_id = #{quickEntryTableId}</if>
+        </where>
+    </select>
+
+    <select id="selectDCTableTempById" parameterType="Long">
+        <include refid="selectDCTableTempVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDCTableTemp" parameterType="com.nnroad.datacenter.domain.DCTableTemp" useGeneratedKeys="true" keyProperty="id">
+        insert into dc_table_temp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="tableName != null and tableName != ''">`table_name`,</if>
+            <if test="tableEnName != null and tableEnName != ''">table_en_name,</if>
+            <if test="tableDbName != null and tableDbName != ''">table_db_name,</if>
+            <if test="tableLiveTime != null">table_live_time,</if>
+            <if test="tableRemark != null">table_remark,</if>
+            <if test="tableStatus != null">table_status,</if>
+            <if test="tableType != null ">table_type,</if>
+            <if test="tableSyn != null">table_syn,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="groupIds != null">group_ids,</if>
+            <if test="importStart != null">import_start,</if>
+            <if test="importType != null">import_type,</if>
+            <if test="importSpecialColumn != null">import_special_column,</if>
+            <if test="importSpecialColumnType != null">import_special_column_type,</if>
+            <if test="importSpecialColumnWhere != null">import_special_column_where,</if>
+            <if test="importRequireColumn != null">import_require_column,</if>
+            <if test="importSheetName != null">import_sheet_name,</if>
+            <if test="tableDataHasAuth != null">table_data_has_auth,</if>
+            <if test="dataSourceId != null">data_source_id,</if>
+            <if test="tableAutomaticEntry != null">table_automatic_entry,</if>
+            <if test="quickEntryTableId != null">quick_entry_table_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="tableName != null and tableName != ''">#{tableName},</if>
+            <if test="tableEnName != null and tableEnName != ''">#{tableEnName},</if>
+            <if test="tableDbName != null and tableDbName != ''">#{tableDbName},</if>
+            <if test="tableLiveTime != null">#{tableLiveTime},</if>
+            <if test="tableRemark != null">#{tableRemark},</if>
+            <if test="tableStatus != null">#{tableStatus},</if>
+            <if test="tableType != null ">#{tableType},</if>
+            <if test="tableSyn != null">#{tableSyn},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+<!--            <if test="dcId != null">#{dcId},</if>-->
+            <if test="groupIds != null">#{groupIds},</if>
+            <if test="importStart != null">#{importStart},</if>
+            <if test="importType != null">#{importType},</if>
+            <if test="importSpecialColumn != null">#{importSpecialColumn},</if>
+            <if test="importSpecialColumnType != null">#{importSpecialColumnType},</if>
+            <if test="importSpecialColumnWhere != null">#{importSpecialColumnWhere},</if>
+            <if test="importRequireColumn != null">#{importRequireColumn},</if>
+            <if test="importSheetName != null">#{importSheetName},</if>
+            <if test="tableDataHasAuth != null">#{tableDataHasAuth},</if>
+            <if test="dataSourceId != null">#{dataSourceId},</if>
+            <if test="tableAutomaticEntry != null">#{tableAutomaticEntry},</if>
+            <if test="quickEntryTableId != null">#{quickEntryTableId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDCTableTemp" parameterType="com.nnroad.datacenter.domain.DCTableTemp">
+        update dc_table_temp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="tableName != null and tableName != ''">`table_name` = #{tableName},</if>
+            <if test="tableEnName != null and tableEnName != ''">table_en_name = #{tableEnName},</if>
+            <if test="tableDbName != null and tableDbName != ''">table_db_name = #{tableDbName},</if>
+            <if test="tableLiveTime != null">table_live_time = #{tableLiveTime},</if>
+            <if test="tableRemark != null">table_remark = #{tableRemark},</if>
+            <if test="tableStatus != null">table_status = #{tableStatus},</if>
+            <if test="tableType != null ">table_type = #{tableType},</if>
+            <if test="tableSyn != null">table_syn = #{tableSyn},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="groupIds != null">group_ids = #{groupIds},</if>
+            <if test="importStart != null">import_start = #{importStart},</if>
+            <if test="importType != null">import_type = #{importType},</if>
+            <if test="importSpecialColumn != null">import_special_column = #{importSpecialColumn},</if>
+            <if test="importSpecialColumnType != null">import_special_column_type = #{importSpecialColumnType},</if>
+            <if test="importSpecialColumnWhere != null">import_special_column_where = #{importSpecialColumnWhere},</if>
+            <if test="importRequireColumn != null">import_require_column = #{importRequireColumn},</if>
+            <if test="importSheetName != null">import_sheet_name = #{importSheetName},</if>
+            <if test="tableDataHasAuth != null">table_data_has_auth = #{tableDataHasAuth},</if>
+            <if test="dataSourceId != null">data_source_id = #{dataSourceId},</if>
+            <if test="tableAutomaticEntry != null">table_automatic_entry = #{tableAutomaticEntry},</if>
+            <if test="quickEntryTableId != null">quick_entry_table_id = #{quickEntryTableId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDCTableTempById" parameterType="Long">
+        delete from dc_table_temp where table_id = #{tableId}
+    </delete>
+
+    <delete id="deleteDCTableTempByIds" parameterType="String">
+        delete from dc_table_temp where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectDCTableTempByTableId" parameterType="Long" resultMap="DCTableTempResult">
+        <include refid="selectDCTableTempVo"/>
+        where table_id = #{tableId}
+    </select>
+
+    <delete id="deleteDCTableTempByTableId" parameterType="Long">
+        delete from dc_table_temp where table_id = #{tableId}
+    </delete>
+</mapper>

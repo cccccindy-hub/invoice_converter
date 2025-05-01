@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.payroll.mapper.PsResultMapper">
+    
+    <resultMap type="PsResult" id="PsResultResult">
+        <result property="id"    column="id"    />
+        <result property="duration"    column="duration"    />
+        <result property="idNo"    column="id_no"    />
+        <result property="name"    column="name"    />
+        <result property="extraData"    column="extra_data"  typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler"  />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="groupIds"    column="group_ids"    />
+    </resultMap>
+
+    <sql id="selectPsResultVo">
+        select id, duration, id_no, name, extra_data, create_by, create_time, update_by, update_time, group_ids from ps_result
+    </sql>
+
+    <select id="selectPsResultList" parameterType="PsResult" resultMap="PsResultResult">
+        <include refid="selectPsResultVo"/>
+        <where>  
+            <if test="duration != null  and duration != ''"> and duration = #{duration}</if>
+            <if test="idNo != null  and idNo != ''"> and id_no = #{idNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="extraData != null  and extraData != ''"> and extra_data = #{extraData}</if>
+            <if test="groupIds != null  and groupIds != ''"> and group_ids = #{groupIds}</if>
+        </where>
+    </select>
+    
+    <select id="selectPsResultById" parameterType="Long" resultMap="PsResultResult">
+        <include refid="selectPsResultVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPsResult" parameterType="PsResult" useGeneratedKeys="true" keyProperty="id">
+        insert into ps_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="duration != null">duration,</if>
+            <if test="idNo != null">id_no,</if>
+            <if test="name != null">name,</if>
+            <if test="extraData != null">extra_data,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="groupIds != null">group_ids,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="duration != null">#{duration},</if>
+            <if test="idNo != null">#{idNo},</if>
+            <if test="name != null">#{name},</if>
+            <if test="extraData != null">#{extraData,typeHandler=com.nnroad.framework.datasource.JsonTypeHandler},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="groupIds != null">#{groupIds},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePsResult" parameterType="PsResult">
+        update ps_result
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="idNo != null">id_no = #{idNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="extraData != null">extra_data = #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="groupIds != null">group_ids = #{groupIds},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePsResultById" parameterType="Long">
+        delete from ps_result where id = #{id}
+    </delete>
+
+    <delete id="deletePsResultByIds" parameterType="String">
+        delete from ps_result where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

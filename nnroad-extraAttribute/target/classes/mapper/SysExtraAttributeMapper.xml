@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.extraAttribute.mapper.SysExtraAttributeMapper">
+    
+    
+    <resultMap type="SysExtraAttribute" id="SysExtraAttributeInHierarchyResult">
+	    <id property="id" column="parent_id"/>
+	    <result property="name" column="parent_name"/>
+	    <result property="type" column="parent_type"/>
+	    <result property="length" column="parent_length"/>
+		<result property="searchable" column="parent_searchable"/>
+		<result property="sortOrder" column="parent_sort_order"/>
+		<result property="options" column="parent_options" typeHandler = "com.nnroad.framework.datasource.ListToStringHandler"/>
+	    
+	    <collection property="children" ofType="SysExtraAttribute">
+	        <id property="id" column="child_id"/>
+	        <result property="name" column="child_name"/>
+	        <result property="type" column="child_type"/>
+	        <result property="length" column="child_length"/>
+			<result property="searchable" column="child_searchable"/>
+			<result property="sortOrder" column="child_sort_order"/>
+			<result property="options" column="child_options" typeHandler = "com.nnroad.framework.datasource.ListToStringHandler"/>
+	    </collection>
+	</resultMap>
+	
+	
+	<resultMap id="SysExtraAttributeListResult" type="SysExtraAttribute">
+	    <id property="id" column="id"/>
+	    <result property="name" column="name"/>
+	    <result property="type" column="type"/>
+	    <result property="length" column="length"/>
+		<result property="searchable" column="searchable"/>
+		<result property="sortOrder" column="sort_order"/>
+		<result property="options" column="options" typeHandler = "com.nnroad.framework.datasource.ListToStringHandler"/>
+	</resultMap>
+    
+    
+    <resultMap type="SysExtraAttribute" id="SysExtraAttributeResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="length"    column="length"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="parentName" column="parent_name"/>
+        <result property="tableName" column="table_name"/>
+		<result property="searchable" column="searchable"/>
+		<result property="sortOrder" column="sort_order"/>
+		<result property="options" column="options" typeHandler = "com.nnroad.framework.datasource.ListToStringHandler"/>
+    </resultMap>
+
+
+	<sql id="selectSysClientAttributeVo">
+		select id, name, type, created_at, updated_at, length, parent_id, table_name, sort_order, searchable, options, from sys_extra_attribute
+	</sql>
+
+
+    <select id="selectParentAttribute" parameterType="String" resultMap="SysExtraAttributeResult">
+	    SELECT *
+	    FROM sys_extra_attribute
+	    WHERE type = 'json'
+	      AND parent_id IS NULL
+	      AND table_name = #{tableName}
+	</select>
+    
+    <select id="selectSysExtraAttributeById" resultMap="SysExtraAttributeResult">
+	    SELECT e.*, p.name AS parent_name
+	    FROM sys_extra_attribute e
+	    LEFT JOIN sys_extra_attribute p ON e.parent_id = p.id
+	    WHERE e.id = #{id}
+	</select>
+
+	<select id="selectExtraAttributeListByTableName" parameterType="String" resultMap="SysExtraAttributeListResult">
+		SELECT
+		id,
+		name,
+		type,
+		length,
+		sort_order,
+		searchable,
+		options
+		FROM
+		sys_extra_attribute
+		WHERE table_name = #{tableName}
+	</select>
+	
+	<select id="selectSysExtraAttributeList" parameterType="SysExtraAttribute" resultMap="SysExtraAttributeResult">
+	    SELECT e.*, p.name AS parent_name
+		FROM sys_extra_attribute e
+		LEFT JOIN sys_extra_attribute p ON e.parent_id = p.id
+		WHERE 1=1
+	    AND (#{tableName} IS NULL OR e.table_name = #{tableName})
+	    AND (#{name} IS NULL OR #{name} = '' OR e.name LIKE CONCAT('%', #{name}, '%'))
+	</select>
+
+
+	<select id="selectSysExtraAttributeInHierarchy" parameterType="String" resultMap="SysExtraAttributeInHierarchyResult">
+		SELECT
+			parent.id AS parent_id,
+			parent.name AS parent_name,
+			parent.type AS parent_type,
+			parent.length AS parent_length,
+			parent.sort_order AS parent_sort_order,
+			parent.searchable AS parent_searchable,
+			parent.options AS parent_options,
+			child.id AS child_id,
+			child.name AS child_name,
+			child.type AS child_type,
+			child.length AS child_length,
+			child.sort_order AS child_sort_order,
+			child.searchable AS child_searchable,
+			child.options AS child_options
+		FROM
+			sys_extra_attribute AS parent
+		LEFT JOIN
+			sys_extra_attribute AS child ON child.parent_id = parent.id
+		WHERE
+			parent.parent_id IS NULL AND parent.table_name = #{tableName}
+		ORDER BY
+			parent.sort_order ASC,
+			child.sort_order ASC;
+	</select>
+
+	<insert id="insertSysExtraAttribute" parameterType="SysExtraAttribute" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO sys_extra_attribute
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null and name != ''">name,</if>
+			<if test="type != null and type != ''">type,</if>
+			<if test="length != null">length,</if>
+			<if test="parentId != null">parent_id,</if>
+			<if test="tableName != null and tableName != ''">table_name,</if>
+			<if test="createdAt != null">created_at,</if>
+			<if test="updatedAt != null">updated_at,</if>
+			<if test="options != null">options,</if>
+			<if test="sortOrder != null">sort_order,</if>
+			<if test="searchable != null">searchable,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="name != null and name != ''">#{name},</if>
+			<if test="type != null and type != ''">#{type},</if>
+			<if test="length != null">#{length},</if>
+			<if test="parentId != null">#{parentId},</if>
+			<if test="tableName != null and tableName != ''">#{tableName},</if>
+			<if test="createdAt != null">#{createdAt},</if>
+			<if test="updatedAt != null">#{updatedAt},</if>
+			<if test="options != null">#{options, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},</if>
+			<if test="sortOrder!= null">#{sortOrder},</if>
+			<if test="searchable != null">#{searchable},</if>
+		</trim>
+	</insert>
+
+	<insert id="insertSysExtraAttributeCustom" useGeneratedKeys="true" keyProperty="sysExtraAttribute.id">
+		insert into sys_extra_attribute
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="sysExtraAttribute.name != null and sysExtraAttribute.name != ''">name,</if>
+			<if test="sysExtraAttribute.type != null and sysExtraAttribute.type != ''">type,</if>
+			<if test="sysExtraAttribute.length != null">length,</if>
+			<if test="sysExtraAttribute.parentId != null">parent_id,</if>
+			<if test="options != null">options,</if>
+			<if test="sortOrder != null">sort_order,</if>
+			<if test="searchable != null">searchable,</if>
+			<if test="sysExtraAttribute.tableName != null">table_name,</if>
+			<if test="sysExtraAttribute.createdAt != null">created_at,</if>
+			<if test="sysExtraAttribute.updatedAt != null">updated_at,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="sysExtraAttribute.name != null and sysExtraAttribute.name != ''">#{sysExtraAttribute.name},</if>
+			<if test="sysExtraAttribute.type != null and sysExtraAttribute.type != ''">#{sysExtraAttribute.type},</if>
+			<if test="sysExtraAttribute.length != null">#{sysExtraAttribute.length},</if>
+			<if test="sysExtraAttribute.parentId != null">#{sysExtraAttribute.parentId},</if>
+			<if test="sysExtraAttribute.tableName != null">table_name,</if>
+			<if test="sysExtraAttribute.options != null">#{options, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},</if>
+			<if test="sysExtraAttribute.sortOrder != null">#{sortOrder},</if>
+			<if test="sysExtraAttribute.searchable != null">#{searchable},</if>
+			<if test="sysExtraAttribute.createdAt != null">#{sysExtraAttribute.createdAt},</if>
+			<if test="sysExtraAttribute.updatedAt != null">#{sysExtraAttribute.updatedAt},</if>
+		</trim>
+	</insert>
+
+	<update id="updateSysExtraAttribute">
+		update sys_extra_attribute
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="sysExtraAttribute.name != null and sysExtraAttribute.name != ''">name = #{sysExtraAttribute.name},</if>
+			<if test="sysExtraAttribute.type != null and sysExtraAttribute.type != ''">type = #{sysExtraAttribute.type},</if>
+			<if test="sysExtraAttribute.length != null">length = #{sysExtraAttribute.length},</if>
+			<if test="sysExtraAttribute.parentId != null">parent_id = #{sysExtraAttribute.parentId},</if>
+			<if test="sysExtraAttribute.tableName != null">table_name = #{sysExtraAttribute.tableName},</if>
+			<if test="sysExtraAttribute.options != null">options = #{sysExtraAttribute.options, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},</if>
+			<if test="sysExtraAttribute.sortOrder != null">sort_order = #{sysExtraAttribute.sortOrder},</if>
+			<if test="sysExtraAttribute.searchable != null">searchable = #{sysExtraAttribute.searchable},</if>
+			<if test="sysExtraAttribute.createdAt != null">created_at = #{sysExtraAttribute.createdAt},</if>
+			<if test="sysExtraAttribute.updatedAt != null">updated_at = #{sysExtraAttribute.updatedAt},</if>
+
+		</trim>
+		where id = #{sysExtraAttribute.id}
+	</update>
+
+    <delete id="deleteSysExtraAttributeById">
+        delete from sys_extra_attribute where id = #{id}
+    </delete>
+
+    <delete id="deleteSysExtraAttributeByIds">
+        delete from sys_extra_attribute where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <select id="countNullValuesByKey" parameterType="map" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM ${tableName}
+	    WHERE JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.${keyPath}')) IS NOT NULL
+	    AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.${keyPath}')) != ''
+       	AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.${keyPath}')) != 0;
+	</select>
+</mapper>

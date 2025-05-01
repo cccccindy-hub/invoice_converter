@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.client.mapper.SysClientMapper">
+    
+    <resultMap type="SysClient" id="SysClientResult">
+        <result property="id"    column="id"    />
+		<result property="companyCode"    column="company_code"    />
+        <result property="clientName"    column="client_name"    />
+        <result property="clientLocation"    column="client_location"    />
+        <result property="serviceCountry"    column="service_country"  typeHandler = "com.nnroad.framework.datasource.ListToStringHandler" />
+        <result property="industry"    column="industry"    />
+        <result property="primaryServiceType"    column="primary_service_type"    />
+        <result property="secondaryServiceType"    column="secondary_service_type"    />
+        <result property="otherServiceTypes"    column="other_service_types" typeHandler = "com.nnroad.framework.datasource.ListToStringHandler"    />
+        <result property="serviceTypeRemark"    column="service_type_remark"    />
+        <result property="contactPersonName"    column="contact_person_name"    />
+        <result property="contactPersonEmail"    column="contact_person_email"    />
+        <result property="contactPhoneNumber"    column="contact_phone_number"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="remark"    column="remark"    />
+        <result property="extraData"    column="extra_data"  typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler"  />
+        <result property="createdAt"    column="created_at"    />
+        <result property="modifiedAt"    column="modified_at"    />
+		<result property="clientActive"    column="client_active"    />
+
+    </resultMap>
+
+    <sql id="selectSysClientVo">
+        select id, client_name, company_code, client_location, service_country, industry, primary_service_type, secondary_service_type, other_service_types, service_type_remark, contact_person_name, contact_person_email, contact_phone_number, start_date, end_date, remark, created_at, modified_at, client_active from sys_client
+    </sql>
+    
+
+    <select id="selectSysClientList" parameterType="SysClient" resultMap="SysClientResult">
+        SELECT *
+		FROM sys_client
+		WHERE 1=1
+			<if test="id != null">
+				AND id =  #{id}
+			</if>
+		    <if test="clientName != null and clientName != ''">
+		        AND client_name LIKE CONCAT('%', #{clientName}, '%')
+		    </if>
+		    <if test="clientLocation != null and clientLocation != ''">
+		        AND client_location = #{clientLocation}
+		    </if>
+			<if test="serviceCountry != null and serviceCountry != ''">
+				AND JSON_CONTAINS(service_country, #{serviceCountry, typeHandler=com.nnroad.framework.datasource.ListToStringHandler})
+			</if>
+			<if test="industry != null">
+    			AND industry = 'Technology'
+			</if>
+		    <if test="primaryServiceType != null and primaryServiceType != ''">
+		        AND primary_service_type = #{primaryServiceType}
+		    </if>
+		    <if test="secondaryServiceType != null and secondaryServiceType != ''">
+		        AND secondary_service_type = #{secondaryServiceType}
+		    </if>
+		    <if test="otherServiceTypes != null and otherServiceTypes != ''">
+		        AND other_service_types = #{otherServiceTypes}
+		    </if>
+		    <if test="serviceTypeRemark != null and serviceTypeRemark != ''">
+		        AND service_type_remark = #{serviceTypeRemark}
+		    </if>
+		    <if test="contactPersonName != null and contactPersonName != ''">
+		        AND contact_person_name LIKE CONCAT('%', #{contactPersonName}, '%')
+		    </if>
+		    <if test="contactPersonEmail != null and contactPersonEmail != ''">
+		        AND contact_person_email = #{contactPersonEmail}
+		    </if>
+		    <if test="contactPhoneNumber != null and contactPhoneNumber != ''">
+		        AND contact_phone_number = #{contactPhoneNumber}
+		    </if>
+		    <if test="startDate != null">
+		        AND start_date = #{startDate, jdbcType=DATE}
+		    </if>
+		    <if test="endDate != null">
+		        AND end_date = #{endDate, jdbcType=DATE}
+		    </if>
+		    <if test="createdAt != null">
+		        AND created_at = #{createdAt}
+		    </if>
+		    <if test="modifiedAt != null">
+		        AND modified_at = #{modifiedAt}
+		    </if>
+			<if test="clientActive != null">
+				AND client_active= #{clientActive}
+			</if>
+			<if test="extraData != null and extraData.size() > 0">
+				<!-- Loop over the extraData map -->
+				<foreach collection="extraData.entrySet()" index="key" item="element" >
+					<if test="element.type == 'nested'">
+						<foreach collection="element.value" index="childKey" item="childElement">
+							<if test="childElement != null and childElement != ''">
+								AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.\"${key}\".\"${childKey}\"')) = #{childElement}
+							</if>
+						</foreach>
+					</if>
+					<if test="element.type == 'regular'">
+						<if test="element.value != null and element.value != ''">
+							AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.\"${key}\"')) = #{element.value}
+						</if>
+					</if>
+				</foreach>
+			</if>
+    </select>
+    
+    <select id="selectSysClientById" parameterType="Long" resultMap="SysClientResult">
+	    SELECT * FROM sys_client
+	    WHERE id = #{id}
+	</select>
+
+   <insert id="insertSysClient" parameterType="SysClient" useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO sys_client (
+	        client_name,
+	        company_code,
+	        client_location,
+	        service_country,
+	        industry,
+	        primary_service_type,
+	        secondary_service_type,
+	        other_service_types,
+	        service_type_remark,
+	        contact_person_name,
+	        contact_person_email,
+	        contact_phone_number,
+	        start_date,
+	        end_date,
+	        remark,
+	        extra_data,
+	   		client_active
+	    ) VALUES (
+	        #{clientName},
+	        #{companyCode},
+	        #{clientLocation},
+	        #{serviceCountry, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},
+	        #{industry},
+	        #{primaryServiceType},
+	        #{secondaryServiceType},
+	        #{otherServiceTypes, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},
+	        #{serviceTypeRemark},
+	        #{contactPersonName},
+	        #{contactPersonEmail},
+	        #{contactPhoneNumber},
+	        #{startDate},
+	        #{endDate},
+	        #{remark},
+	        #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler},
+	   		#{clientActive}
+	    );
+</insert>
+   
+
+    <update id="updateSysClient" parameterType="SysClient">
+        update sys_client
+        SET
+	        client_name = #{clientName},
+			company_code = #{companyCode},
+	        client_location = #{clientLocation},
+	        service_country = #{serviceCountry, jdbcType=ARRAY, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},
+	        industry = #{industry},
+	        primary_service_type = #{primaryServiceType},
+	        secondary_service_type = #{secondaryServiceType},
+	        other_service_types = #{otherServiceTypes, jdbcType=ARRAY, typeHandler=com.nnroad.framework.datasource.ListToStringHandler},
+	        service_type_remark = #{serviceTypeRemark},
+	        contact_person_name = #{contactPersonName},
+	        contact_person_email = #{contactPersonEmail},
+	        contact_phone_number = #{contactPhoneNumber},
+	        start_date = #{startDate},
+	        end_date = #{endDate},
+	        remark = #{remark},
+	        created_at = #{createdAt},
+	        modified_at = #{modifiedAt},
+	        extra_data = #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler},
+			client_active = #{clientActive}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysClientById" parameterType="Long">
+        delete from sys_client where id = #{id}
+    </delete>
+
+    <delete id="deleteSysClientByIds" parameterType="String">
+        delete from sys_client where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <select id="getClientByVendorId" parameterType="Long" resultMap="SysClientResult">
+       SELECT DISTINCT c.*
+	   FROM sys_client c
+	   JOIN sys_employee e ON c.id = e.client_id
+	   WHERE e.vendor_id = #{vendorId}
+    </select>
+
+	<select id="getMaxCodeClient" resultType="string" parameterType="string">
+		select max(company_code) from sys_client where  company_code  like concat(#{prefix}, '%')
+	</select>
+
+	<select id="checkMaxCodeClient" resultType="integer">
+		select count(1) from sys_client where company_code >= #{clientCode}  and company_code like concat(#{prefix}, '%')
+	</select>
+
+	<update id="deactivateSysClientById">
+		UPDATE sys_client
+		SET client_active = 0
+		WHERE id = #{id};
+	</update>
+</mapper>

@@ -1,0 +1,5 @@
+com/nnroad/extraAttribute/service/impl/SysExtraAttributeServiceImpl.class
+com/nnroad/extraAttribute/domain/SysExtraAttribute.class
+com/nnroad/utils/ExtraAttributeUtils.class
+com/nnroad/extraAttribute/service/ISysExtraAttributeService.class
+com/nnroad/extraAttribute/mapper/SysExtraAttributeMapper.class

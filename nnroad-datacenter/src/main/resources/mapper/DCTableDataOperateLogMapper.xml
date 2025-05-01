@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableDataOperateLogMapper">
+    
+    <resultMap type="com.nnroad.datacenter.domain.DCTableDataOperateLog" id="DcTableResultLogResult">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="operateType"    column="operate_type"    />
+        <result property="dataId"    column="data_id"    />
+        <result property="before"    column="before"    />
+        <result property="after"    column="after"    />
+        <result property="batchId"    column="batch_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDcTableDataOperateLogVo">
+        select id, table_id, operate_type, data_id, `before`, `after`, batch_id, del_flag, create_by, create_time, update_by, update_time from dc_table_data_operate_log
+    </sql>
+    <insert id="insertDcTableDataOperateLog" parameterType="com.nnroad.datacenter.domain.DCTableDataOperateLog" useGeneratedKeys="true" keyProperty="id">
+        insert into dc_table_data_operate_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="operateType != null">operate_type,</if>
+            <if test="dataId != null">data_id,</if>
+            <if test="before != null">`before`,</if>
+            <if test="after != null">`after`,</if>
+            <if test="batchId != null and batchId != ''">batch_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="operateType != null">#{operateType},</if>
+            <if test="dataId != null">#{dataId},</if>
+            <if test="before != null">#{before},</if>
+            <if test="after != null">#{after},</if>
+            <if test="batchId != null and batchId != ''">#{batchId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+    <select id="selectTablesByBatchId" resultType="string">
+        SELECT
+            DISTINCT table_id
+        FROM
+            dc_table_data_operate_log
+        WHERE
+            batch_id = #{batchId}
+    </select>
+    <select id="selectTablesDatasCountByBatchId" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            dc_table_data_operate_log
+        WHERE
+            batch_id = #{batchId}
+    </select>
+    <select id="selectCanRollBackDataId" resultType="string">
+        SELECT
+            t.id
+        FROM
+            (
+                SELECT
+                    row_number() over ( PARTITION BY data_id ORDER BY create_time DESC ) rn,
+                    dc_table_data_operate_log.id,
+                    dc_table_data_operate_log.batch_id,
+                    dc_table_data_operate_log.table_id
+                FROM
+                    dc_table_data_operate_log
+                WHERE
+                    data_id IN ( SELECT data_id FROM dc_table_data_operate_log WHERE batch_id = #{batchId} and table_id =#{tableId} and del_flag = 0) and table_id =#{tableId}
+            ) t
+        WHERE
+            t.rn = 1
+          AND t.batch_id = #{batchId}
+    </select>
+    <select id="selectByIds" resultMap="DcTableResultLogResult"  >
+        <include refid="selectDcTableDataOperateLogVo"></include>
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and del_flag = 0
+    </select>
+    <update id="deleteByIds">
+        UPDATE
+            dc_table_data_operate_log
+        SET
+            del_flag = 2
+        WHERE
+            batch_id = #{batchId}
+    </update>
+</mapper>

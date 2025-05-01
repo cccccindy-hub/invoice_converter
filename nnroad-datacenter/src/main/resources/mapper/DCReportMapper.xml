@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCReportMapper">
+
+    <resultMap type="com.nnroad.datacenter.domain.DCReport" id="DCReportResult">
+        <result property="reportId"    column="report_id"    />
+        <result property="used_for"    column="used_for"    />
+        <result property="reportName"    column="report_name"    />
+        <result property="reportEnName"    column="report_en_name"    />
+        <result property="tableLiveTime"    column="table_live_time"    />
+        <result property="reportDbname"    column="report_dbName"    />
+        <result property="tableRemark"    column="table_remark"    />
+        <result property="tableStatus"    column="table_status"    />
+        <result property="mainTablename"    column="main_tableName"    />
+        <result property="secondaryTablename"    column="secondary_tableName"    />
+        <result property="onCondition"    column="on_condition"    />
+        <result property="groupbyCondition"    column="groupby_condition"    />
+        <result property="whereCondition"    column="where_condition"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="tableIsgen"    column="table_isgen"    />
+        <result property="tableSyn"    column="table_syn"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="groupIds"    column="group_ids"    />
+        <result property="tableShow"    column="table_show"    />
+        <result property="dataSourceId"    column="data_source_id"    />
+        <result property="tableJoinType"    column="table_join_type"    />
+        <result property="secondTableDbname"    column="second_table_dbname"    />
+        <result property="mainTableDbname"    column="main_table_dbname"    />
+        <result property="readIds"    column="read_ids"    />
+        <result property="operationIds"    column="operation_ids"    />
+    </resultMap>
+
+    <sql id="selectDCReportVo">
+        select report_id, used_for, report_en_name,report_name, table_live_time, report_dbName, table_remark, table_status, main_tableName,
+        secondary_tableName, on_condition, groupby_condition, where_condition, create_by, table_isgen, update_by, table_syn,
+        create_time, update_time, del_flag, group_ids, table_show , data_source_id , table_join_type,main_table_dbname,
+        second_table_dbname, read_ids, operation_ids from dc_report t
+    </sql>
+
+    <select id="selectDCReportResult" parameterType="DCReport" resultMap="DCReportResult">
+        <include refid="selectDCReportVo"/>
+        <where>
+            <if test="used_for != null "> and used_for = #{used_for}</if>
+            <if test="reportName != null  and reportName != ''"> and report_name like concat('%', #{reportName}, '%')</if>
+            <if test="tableLiveTime != null "> and table_live_time = #{tableLiveTime}</if>
+            <if test="reportDbname != null  and reportDbname != ''"> and report_dbName like concat('%', #{reportDbname}, '%')</if>
+            <if test="tableRemark != null  and tableRemark != ''"> and table_remark = #{tableRemark}</if>
+            <if test="tableStatus != null "> and table_status = #{tableStatus}</if>
+            <if test="mainTablename != null  and mainTablename != ''"> and main_tableName like concat('%', #{mainTablename}, '%')</if>
+            <if test="secondaryTablename != null  and secondaryTablename != ''"> and secondary_tableName like concat('%', #{secondaryTablename}, '%')</if>
+            <if test="onCondition != null  and onCondition != ''"> and on_condition = #{onCondition}</if>
+            <if test="groupbyCondition != null  and groupbyCondition != ''"> and groupby_condition = #{groupbyCondition}</if>
+            <if test="whereCondition != null  and whereCondition != ''"> and where_condition = #{whereCondition}</if>
+            <if test="tableIsgen != null "> and table_isgen = #{tableIsgen}</if>
+            <if test="tableSyn != null "> and table_syn = #{tableSyn}</if>
+            <!--<if test="groupIds != null  and groupIds != ''"> and group_ids = #{groupIds}</if>-->
+            <if test="tableShow != null "> and table_show = #{tableShow}</if>
+            <if test="dataSourceId != null "> and data_source_id = #{dataSourceId}</if>
+            <if test="tableJoinType != null "> and table_join_type = #{tableJoinType}</if>
+       </where>
+    </select>
+
+    <select id="selectDCReportWithFinance" parameterType="DCReport" resultMap="DCReportResult">
+        <include refid="selectDCReportVo"/>
+        where
+            table_isgen = 1 and table_show = 1
+            <if test="used_for != null "> and used_for = #{used_for}</if>
+            <if test="reportName != null  and reportName != ''"> and report_name like concat('%', #{reportName}, '%')</if>
+            <if test="dataSourceId != null "> and data_source_id = #{dataSourceId}</if>
+
+    </select>
+
+    <select id="selectDCReportById" parameterType="Long" resultMap="DCReportResult">
+        <include refid="selectDCReportVo"/>
+        where report_id = #{reportId}
+    </select>
+
+    <insert id="insertDCReport" parameterType="DCReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into dc_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="used_for != null">used_for,</if>
+            <if test="reportName != null">report_name,</if>
+            <if test="tableLiveTime != null">table_live_time,</if>
+            <if test="reportDbname != null and reportDbname != ''">report_dbName,</if>
+            <if test="tableRemark != null">table_remark,</if>
+            <if test="tableStatus != null">table_status,</if>
+            <if test="mainTablename != null">main_tableName,</if>
+            <if test="secondaryTablename != null">secondary_tableName,</if>
+            <if test="onCondition != null">on_condition,</if>
+            <if test="groupbyCondition != null">groupby_condition,</if>
+            <if test="whereCondition != null">where_condition,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="tableIsgen != null">table_isgen,</if>
+            <if test="tableSyn != null">table_syn,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="groupIds != null">group_ids,</if>
+            <if test="tableShow != null">table_show,</if>
+            <if test="dataSourceId != null">data_source_id,</if>
+            <if test="tableJoinType != null">table_join_type,</if>
+
+            <if test="mainTableDbname != null">main_table_dbname,</if>
+            <if test="secondTableDbname != null">second_table_dbname,</if>
+            <if test="readIds != null">read_ids,</if>
+            <if test="operationIds != null">operation_ids,</if>
+            <if test="reportEnName != null">report_en_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="used_for != null">#{used_for},</if>
+            <if test="reportName != null">#{reportName},</if>
+            <if test="tableLiveTime != null">#{tableLiveTime},</if>
+            <if test="reportDbname != null and reportDbname != ''">#{reportDbname},</if>
+            <if test="tableRemark != null">#{tableRemark},</if>
+            <if test="tableStatus != null">#{tableStatus},</if>
+            <if test="mainTablename != null">#{mainTablename},</if>
+            <if test="secondaryTablename != null">#{secondaryTablename},</if>
+            <if test="onCondition != null">#{onCondition},</if>
+            <if test="groupbyCondition != null">#{groupbyCondition},</if>
+            <if test="whereCondition != null">#{whereCondition},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="tableIsgen != null">#{tableIsgen},</if>
+            <if test="tableSyn != null">#{tableSyn},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="groupIds != null">#{groupIds},</if>
+            <if test="tableShow != null">#{tableShow},</if>
+            <if test="dataSourceId != null">#{dataSourceId},</if>
+            <if test="tableJoinType != null">#{tableJoinType},</if>
+
+            <if test="mainTableDbname != null">#{mainTableDbname},</if>
+            <if test="secondTableDbname != null">#{secondTableDbname},</if>
+            <if test="readIds != null">#{readIds},</if>
+            <if test="operationIds != null">#{operationIds},</if>
+            <if test="reportEnName != null">#{reportEnName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDCReport" parameterType="DCReport">
+        update dc_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="used_for != null">used_for = #{used_for},</if>
+            <if test="reportName != null">report_name = #{reportName},</if>
+            <if test="tableLiveTime != null">table_live_time = #{tableLiveTime},</if>
+            <if test="reportDbname != null and reportDbname != ''">report_dbName = #{reportDbname},</if>
+            <if test="tableRemark != null">table_remark = #{tableRemark},</if>
+            <if test="tableStatus != null">table_status = #{tableStatus},</if>
+            <if test="mainTablename != null">main_tableName = #{mainTablename},</if>
+            <if test="secondaryTablename != null">secondary_tableName = #{secondaryTablename},</if>
+            <if test="onCondition != null">on_condition = #{onCondition},</if>
+            <if test="groupbyCondition != null">groupby_condition = #{groupbyCondition},</if>
+            <if test="whereCondition != null">where_condition = #{whereCondition},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="tableIsgen != null">table_isgen = #{tableIsgen},</if>
+            <if test="tableSyn != null">table_syn = #{tableSyn},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="groupIds != null">group_ids = #{groupIds},</if>
+            <if test="tableShow != null">table_show = #{tableShow},</if>
+            <if test="dataSourceId != null">data_source_id = #{dataSourceId},</if>
+            <if test="tableJoinType != null">table_join_type = #{tableJoinType},</if>
+
+            <if test="mainTableDbname != null ">main_table_dbname = #{mainTableDbname},</if>
+            <if test="secondTableDbname != null">second_table_dbname = #{secondTableDbname},</if>
+            <if test="reportEnName != null">report_en_name=#{reportEnName},</if>
+        </trim>
+        where report_id = #{reportId}
+    </update>
+
+    <delete id="deleteDCReportById" parameterType="Long">
+        delete from dc_report where report_id = #{reportId}
+    </delete>
+
+    <delete id="deleteDCReportByIds" parameterType="String">
+        delete from dc_report where report_id in
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </delete>
+    <update id="createView" parameterType="String">
+        ${sql}
+    </update>
+
+    <update id="stopThisModelReport" parameterType="DCReport">
+        update dc_report set table_status = 0
+        where used_for = #{used_for} and report_id != #{reportId}
+    </update>
+    <update id="stopThisDCReport"></update>
+
+    <select id="selectUsedREPORTbyDBname" parameterType="string" resultMap="DCReportResult">
+        <include refid="selectDCReportVo"/>
+        where (main_tableName = #{tableDbName} or  secondary_tableName = #{tableDbName})
+        and table_status =1
+    </select>
+
+    <select id="selectReportByName" parameterType="string" resultMap="DCReportResult">
+        <include refid="selectDCReportVo"/>
+        where report_dbName = #{reportDbname} and table_status =1
+    </select>
+
+    <select id="getTableAllDbName" parameterType="string" resultType="string">
+        SELECT
+            table_schema
+        FROM
+            information_schema.tables
+        WHERE
+            table_schema LIKE 'nnroad_%' and table_name = #{tableName}
+        limit 0,1
+    </select>
+
+    <select id="checkReportDbNameIsExist" resultType="integer">
+        SELECT
+            count( t.table_name )
+        FROM
+            (
+                SELECT
+                    table_name
+                FROM
+                    information_schema.TABLES
+                WHERE
+                    table_schema = ( SELECT DATABASE ())
+                  AND table_name = #{reportDbName}
+                UNION ALL
+                SELECT
+                    report_dbName AS table_name
+                FROM
+                    dc_report
+                WHERE
+                    report_dbName =  #{reportDbName}
+                  AND table_isgen = 0
+            ) t
+        GROUP BY
+            t.table_name
+    </select>
+
+    <select id="selectFinanceByDbName" parameterType="string" resultMap="DCReportResult">
+          SELECT
+                t.view_name as report_name
+            FROM
+                (
+                SELECT
+                    view_name
+                FROM
+                    finance_view_definition_temp
+                WHERE
+                  view_db_name = #{viewDbName}
+                  and del_flag=0
+                UNION ALL
+                SELECT
+                   view_name
+                FROM
+                    finance_view_definition
+                WHERE
+                    view_db_name = #{viewDbName}
+                    and del_flag=0
+            ) t
+            GROUP BY
+            t.view_name
+    </select>
+    <select id="nameIsExist" resultType="java.lang.Integer">
+        select count(1) from (
+                                 SELECT
+                                     table_name as name
+                                 FROM
+                                     dc_table
+                                 WHERE
+                                     table_name =  #{reportName}
+                                 UNION all
+                                 SELECT
+                                     table_name as name
+                                 FROM
+                                     dc_table_temp
+                                 WHERE
+                                     table_name = #{reportName}
+                                 union all
+                                 SELECT
+                                     report_name as name
+                                 FROM
+                                     dc_report
+                                 WHERE
+                                     report_name = #{reportName}
+                                 union all
+                                 SELECT
+                                     report_name  as name
+                                 FROM
+                                     dc_report_temp
+                                 WHERE
+                                     report_name =  #{reportName}
+                             ) t
+        group by t.name
+    </select>
+
+</mapper>

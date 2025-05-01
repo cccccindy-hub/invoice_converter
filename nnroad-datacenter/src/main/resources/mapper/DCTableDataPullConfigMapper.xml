@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableDataPullConfigMapper">
+
+    <resultMap type="com.nnroad.datacenter.domain.DCTableDataPullConfig" id="DcTableDataPullConfigResult">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="groupIds"    column="group_ids"    />
+        <result property="readIds"    column="read_ids"    />
+        <result property="operationIds"    column="operation_ids"    />
+    </resultMap>
+
+    <sql id="selectDcTableDataPullConfigVo">
+        select id, table_id, status, create_by, create_time, update_by, update_time from dc_table_data_pull_config
+    </sql>
+
+
+    <select id="selectDcTableDataPullConfigById" parameterType="Long" resultMap="DcTableDataPullConfigResult">
+        <include refid="selectDcTableDataPullConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDcTableDataPullConfig" parameterType="com.nnroad.datacenter.domain.DCTableDataPullConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into dc_table_data_pull_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDcTableDataPullConfig" parameterType="com.nnroad.datacenter.domain.DCTableDataPullConfig">
+        update dc_table_data_pull_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDcTableDataPullConfigById" parameterType="Long">
+        delete from dc_table_data_pull_config where id = #{id}
+    </delete>
+
+    <delete id="deleteDcTableDataPullConfigByIds" parameterType="String">
+        delete from dc_table_data_pull_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectDcTableDataPullConfigList" parameterType="com.nnroad.datacenter.domain.DCTableDataPullConfig" resultType="com.nnroad.datacenter.domain.DCTableDataPullConfig">
+        SELECT
+            dc_table_data_pull_config.id,
+            dc_table_data_pull_config.`status`,
+            dc_table.table_name as tableName,
+            dc_table.table_en_name as tableEnName,
+            dc_table.table_db_name as tableDbName,
+            dc_data_source.data_source_name as dataSourceName,
+            dc_data_source.id as dataSourceId
+        FROM
+            dc_table_data_pull_config
+                LEFT JOIN dc_table ON dc_table_data_pull_config.table_id = dc_table.table_id
+                LEFT JOIN dc_data_source ON dc_table.data_source_id = dc_data_source.id
+        where dc_table_data_pull_config.del_flag &lt;&gt; 2
+        <if test="tableId != null ">
+            and dc_table_data_pull_config.table_id = #{tableId}
+        </if>
+        <if test="status != null ">
+            and dc_table_data_pull_config.status = #{status}
+        </if>
+        <if test="dataSourceId != null ">
+            and dc_data_source.id = #{dataSourceId}
+        </if>
+    </select>
+
+
+    <resultMap type="com.nnroad.datacenter.domain.DCTableDataPullConfig" id="configMap">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="status"    column="status"    />
+        <collection property="reportConfigList" ofType="com.nnroad.datacenter.domain.DCTableDataPullReportConfig" column="config_id">
+            <result property="id"    column="rc_id"    />
+            <result property="configId"    column="config_id"    />
+            <result property="reportId"    column="report_id"    />
+            <result property="status"    column="report_status"    />
+            <result property="reportDbname"    column="report_dbName"    />
+            <result property="reportName"    column="report_Name"    />
+
+            <collection property="configDetailList" ofType="com.nnroad.datacenter.domain.DCTableDataPullReportConfigDetail" column="config_report_id">
+                <result property="id"    column="rcd_id"    />
+                <result property="configReportId"    column="config_report_id"    />
+                <result property="tableId"    column="table_id"    />
+                <result property="columnName"    column="column_name"    />
+                <result property="importDataName"    column="import_data_name"    />
+                <result property="columnQueryType"    column="column_query_type"    />
+                <result property="columnDict"    column="column_dict"    />
+
+            </collection>
+        </collection>
+
+    </resultMap>
+
+    <select id="selectConfigByTableId" resultMap="configMap">
+        SELECT
+            c.id as id,
+            c.table_id as table_id,
+            c.`status` as status,
+            rc.id as rc_id,
+            rc.config_id as config_id,
+            rc.report_id as report_id,
+            rc.`status` as report_status,
+            r.report_dbName AS report_dbName,
+            r.report_Name AS report_Name,
+            rcd.id as rcd_id,
+            rcd.config_report_id as config_report_id,
+            rcd.column_name as column_name,
+            rcd.import_data_name as import_data_name,
+            rcd.column_query_type as column_query_type,
+            rcd.column_dict as column_dict
+        FROM
+            dc_table_data_pull_config AS c
+                LEFT JOIN dc_table_data_pull_report_config AS rc ON c.id = rc.config_id
+                LEFT JOIN dc_report AS r ON rc.report_id = r.report_id
+                LEFT JOIN dc_table_data_pull_report_config_detail AS rcd ON rcd.config_report_id = rc.id
+        where c.table_id =#{tableId} and c.`status`>0
+    </select>
+</mapper>

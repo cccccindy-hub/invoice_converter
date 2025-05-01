@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.system.mapper.SysAppMapper">
+    
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId"    column="app_id"    />
+        <result property="appName"    column="app_name"    />
+        <result property="appKey"    column="app_key"    />
+        <result property="secretKey"    column="secret_key"    />
+        <result property="fdesc"    column="fdesc"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysAppVo">
+        select app_id, app_name, app_key,secret_key, fdesc, create_by, create_time, update_by, update_time from sys_app
+    </sql>
+
+    <select id="selectSysAppList" parameterType="SysApp" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        <where>  
+            <if test="appName != null  and appName != ''"> and app_name like concat('%', #{appName}, '%')</if>
+            <if test="appKey != null  and appKey != ''"> and app_key = #{appKey}</if>
+            <if test="fdesc != null  and fdesc != ''"> and fdesc = #{fdesc}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysAppByAppId" parameterType="String" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        where app_id = #{appId}
+    </select>
+        
+    <insert id="insertSysApp" parameterType="SysApp">
+        insert into sys_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="appName != null and appName != ''">app_name,</if>
+            <if test="appKey != null and appKey != ''">app_key,</if>
+            <if test="secretKey != null and secretKey != ''">secret_key,</if>
+            <if test="fdesc != null">fdesc,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="appName != null and appName != ''">#{appName},</if>
+            <if test="appKey != null and appKey != ''">#{appKey},</if>
+            <if test="secretKey != null and secretKey != ''">#{secretKey},</if>
+            <if test="fdesc != null">#{fdesc},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysApp" parameterType="SysApp">
+        update sys_app
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appName != null and appName != ''">app_name = #{appName},</if>
+            <if test="appKey != null and appKey != ''">app_key = #{appKey},</if>
+            <if test="secretKey != null and secretKey != ''">secret_key = #{secretKey},</if>
+            <if test="fdesc != null">fdesc = #{fdesc},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where app_id = #{appId}
+    </update>
+
+    <delete id="deleteSysAppByAppId" parameterType="String">
+        delete from sys_app where app_id = #{appId}
+    </delete>
+
+    <delete id="deleteSysAppByAppIds" parameterType="String">
+        delete from sys_app where app_id in 
+        <foreach item="appId" collection="array" open="(" separator="," close=")">
+            #{appId}
+        </foreach>
+    </delete>
+</mapper>

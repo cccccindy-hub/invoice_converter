@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.client.mapper.ClientInfoMapper">
+
+    <resultMap type="ClientInfo" id="ClientInfoResult">
+        <result property="id"    column="id"    />
+        <result property="clientId"    column="client_id"    />
+        <result property="extraData"    column="extra_data"   typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler" />
+    </resultMap>
+
+    <sql id="selectClientInfoVo">
+        select id, client_id, extra_data from client_contract
+    </sql>
+
+    <select id="selectClientInfoList" parameterType="ClientInfo" resultMap="ClientInfoResult">
+        SELECT *
+        FROM ${tableName}
+        WHERE 1=1
+        <if test="clientId != null "> and client_id = #{clientId}</if>
+        <if test="extraData != null and extraData != ''"> and extra_data = #{extraData}</if>
+    </select>
+
+    <select id="selectClientInfoById" parameterType="Long" resultMap="ClientInfoResult">
+        <include refid="selectClientInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientInfo" parameterType="ClientInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into ${tableName} (
+            client_id,
+            extra_data
+        ) VALUES (
+            #{clientId},
+            #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+        );
+
+    </insert>
+
+    <update id="updateClientInfo" parameterType="ClientInfo">
+        update client_contract
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clientId != null">client_id = #{clientId},</if>
+            <if test="extraData != null">extra_data = #{extraData},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientInfoById" parameterType="Long">
+        delete from client_contract where id = #{id}
+    </delete>
+
+    <delete id="deleteClientInfoByIds" parameterType="String">
+        delete from client_contract where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

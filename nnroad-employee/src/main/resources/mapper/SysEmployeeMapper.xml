@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.employee.mapper.SysEmployeeMapper">
+    
+    <resultMap type="SysEmployee" id="SysEmployeeResult">
+        <result property="id"    column="id"    />
+        <result property="clientId"    column="client_id"    />
+		<result property="employeeCode" column="employee_code"/>
+		<result property="companyCode" column="company_code"/>
+        <result property="employeeName"    column="employee_name"    />
+        <result property="employeeEmail"    column="employee_email"    />
+        <result property="employeePhone"    column="employee_phone"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="vendorName" column="vendor_name" /> 
+    	<result property="clientName" column="client_name" />
+        <result property="location"    column="location"    />
+		<result property="employeeActive"    column="employee_active"    />
+        <result property="contractStartDate"    column="contract_start_date"    />
+        <result property="contractEndDate"    column="contract_end_date"    />
+        <result property="remark"    column="remark"    />
+		<result property="businessType"    column="business_type"    />
+        <result property="extraData"    column="extra_data"  typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler"  />
+        <result property="createdAt"    column="created_at"    />
+        <result property="modifiedAt"    column="modified_at"    />
+    </resultMap>
+
+    <sql id="selectSysEmployeeVo">
+        select id, employee_code, company_code, client_id, employee_name, employee_email, employee_phone, vendor_id, location, employee_active, contract_start_date, contract_end_date, remark, extra_data, created_at, modified_at from sys_employee
+    </sql>
+
+	<select id="selectSysEmployeeList" parameterType="SysEmployee" resultMap="SysEmployeeResult">
+		SELECT e.*, c.client_name, v.vendor_name
+		FROM sys_employee e
+		INNER JOIN sys_client c ON e.client_id = c.id
+		LEFT JOIN sys_vendor v ON e.vendor_id = v.id
+		<where>
+			<if test="clientId != null">e.client_id = #{clientId}</if>
+			<if test="employeeName != null and employeeName != ''">AND e.employee_name LIKE CONCAT('%', #{employeeName}, '%')</if>
+			<if test="employeeEmail != null and employeeEmail != ''">AND e.employee_email = #{employeeEmail}</if>
+			<if test="employeePhone != null and employeePhone != ''">AND e.employee_phone = #{employeePhone}</if>
+			<if test="vendorId != null">AND e.vendor_id = #{vendorId}</if>
+			<if test="location != null and location != ''">AND e.location = #{location}</if>
+			<if test="employeeActive != null "> AND e.employee_active = #{employeeActive}</if>
+			<if test="contractStartDate != null">AND e.contract_start_date = #{contractStartDate, jdbcType=DATE}</if>
+			<if test="contractEndDate != null">AND e.contract_end_date = #{contractEndDate, jdbcType=DATE}</if>
+			<if test="createdAt != null">AND e.created_at = #{createdAt}</if>
+			<if test="modifiedAt != null">AND e.modified_at = #{modifiedAt}</if>
+<!--			<if test="extraData != null and extraData.size() > 0">-->
+<!--				&lt;!&ndash; Loop over the extraData map &ndash;&gt;-->
+<!--				<foreach collection="extraData.entrySet()" index="key" item="element" >-->
+<!--					<if test="element.type == 'nested'">-->
+<!--						<foreach collection="element.value" index="childKey" item="childElement">-->
+<!--							<if test="childElement != null and childElement != ''">-->
+<!--								AND JSON_UNQUOTE(JSON_EXTRACT(e.extra_data, '$.\"${key}\".\"${childKey}\"')) = #{childElement}-->
+<!--							</if>-->
+<!--						</foreach>-->
+<!--					</if>-->
+<!--					<if test="element.type == 'regular'">-->
+<!--						<if test="element.value != null and element.value != ''">-->
+<!--							AND JSON_UNQUOTE(JSON_EXTRACT(e.extra_data, '$.\"${key}\"')) = #{element.value}-->
+<!--						</if>-->
+<!--					</if>-->
+<!--				</foreach>-->
+<!--			</if>-->
+		</where>
+	</select>
+
+
+	<select id="selectSysEmployeeById" parameterType="Long" resultMap="SysEmployeeResult">
+        SELECT 
+		    e.*,         
+		    c.client_name AS client_name, 
+		    v.vendor_name AS vendor_name   
+		FROM 
+		    sys_employee e
+		JOIN 
+		    sys_client c ON e.client_id = c.id   
+		LEFT JOIN 
+		    sys_vendor v ON e.vendor_id = v.id    
+		WHERE 
+		    e.id = #{id};
+    </select>
+
+	<insert id="insertSysEmployee" parameterType="SysEmployee" useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO sys_employee (
+	        client_id,
+			company_code,
+			employee_code,
+	        employee_name,
+	        employee_email,
+	        employee_phone,
+	        vendor_id,
+	        location,
+			employee_active,
+	        contract_start_date,
+	        contract_end_date,
+	        remark,
+	        extra_data
+	    ) VALUES (
+	        #{clientId},
+			#{companyCode},
+			#{employeeCode},
+	        #{employeeName},
+	        #{employeeEmail},
+	        #{employeePhone},
+	        #{vendorId},
+	        #{location},
+			#{employeeActive},
+	        #{contractStartDate},
+	        #{contractEndDate},
+	        #{remark},
+	        #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+	    );
+	</insert>
+
+    <update id="updateSysEmployee" parameterType="SysEmployee">
+        UPDATE sys_employee
+		SET
+		    client_id = #{clientId},
+			company_code = #{companyCode},
+			employee_code = #{employeeCode},
+		    employee_name = #{employeeName},
+		    employee_email = #{employeeEmail},
+		    employee_phone = #{employeePhone},
+		    vendor_id = #{vendorId},
+		    location = #{location},
+			employee_active = #{employeeActive},
+		    contract_start_date = #{contractStartDate},
+		    contract_end_date = #{contractEndDate},
+		    remark = #{remark},
+		    created_at = #{createdAt},
+		    modified_at = #{modifiedAt},
+		    extra_data = #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+		WHERE id = #{id};
+    </update>
+
+    <delete id="deleteSysEmployeeById" parameterType="Long">
+        delete from sys_employee where id = #{id}
+    </delete>
+
+    <delete id="deleteSysEmployeeByIds" parameterType="String">
+        delete from sys_employee where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <update id="removeEmployeeFromClient">
+        UPDATE sys_employee
+        SET client_id = NULL
+        WHERE id = #{employeeId} AND client_id = #{clientId}
+    </update>
+    
+    <update id="removeEmployeeFromVendor">
+        UPDATE sys_employee
+        SET vendor_id = NULL
+        WHERE id = #{employeeId} AND vendor_id = #{vendorId}
+    </update>
+    
+    <select id="getEmployeesByClientId" parameterType="Long" resultMap="SysEmployeeResult">
+        SELECT 
+		    e.*,         
+		    c.client_name AS client_name, 
+		    v.vendor_name AS vendor_name   
+		FROM 
+		    sys_employee e
+		JOIN 
+		    sys_client c ON e.client_id = c.id   
+		JOIN 
+		    sys_vendor v ON e.vendor_id = v.id    
+		WHERE 
+		    e.client_id = #{clientId}
+    </select>
+    
+    <select id="getEmployeesByVendorId" parameterType="Long" resultMap="SysEmployeeResult">
+        SELECT * FROM sys_employee WHERE vendor_id = #{vendorId}
+    </select>
+
+	<select id="checkMaxCodeEmployee" resultType="integer" parameterType="SysEmployee">
+		select count(1) from sys_employee where employee_code >= #{employeeCode} and employee_code like
+		concat(#{params.keyPrefix}, '%')
+	</select>
+
+	<select id="getMaxCodeEmployee" resultType="string">
+		select max(employee_code) from sys_employee where employee_code like concat(#{params.keyPrefix}, '%')
+	</select>
+
+	<update id="deactivateEmployeeById">
+		UPDATE sys_employee
+		SET employee_active = 0
+		WHERE id = #{id};
+	</update>
+</mapper>

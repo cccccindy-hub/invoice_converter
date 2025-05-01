@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.datacenter.mapper.DCTableSkipKeywordsConfigMapper">
+
+    <resultMap type="com.nnroad.datacenter.domain.DCTableSkipKeywordsConfig" id="DCTableSkipKeywordsConfigResult">
+        <result property="id"    column="id"    />
+        <result property="tableId"    column="table_id"    />
+        <result property="keyWord"    column="key_word"    />
+        <result property="tableType"    column="table_type"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDCTableSkipKeywordsConfigVo">
+        select id, table_id, key_word, table_type, del_flag, create_by, create_time, update_by, update_time from dc_table_skip_keywords_config
+    </sql>
+
+    <select id="selectDCTableSkipKeywordsConfigList" parameterType="DCTableSkipKeywordsConfig" resultMap="DCTableSkipKeywordsConfigResult">
+        <include refid="selectDCTableSkipKeywordsConfigVo"/>
+        <where>
+            <if test="tableId != null "> and table_id = #{tableId}</if>
+            <if test="keyWord != null  and keyWord != ''"> and key_word = #{keyWord}</if>
+            <if test="tableType != null "> and table_type = #{tableType}</if>
+        </where>
+    </select>
+
+    <select id="selectDCTableSkipKeywordsConfigById" parameterType="Long" resultMap="DCTableSkipKeywordsConfigResult">
+        <include refid="selectDCTableSkipKeywordsConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDCTableSkipKeywordsConfig" parameterType="DCTableSkipKeywordsConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into dc_table_skip_keywords_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id,</if>
+            <if test="keyWord != null">key_word,</if>
+            <if test="tableType != null">table_type,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId},</if>
+            <if test="keyWord != null">#{keyWord},</if>
+            <if test="tableType != null">#{tableType},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDCTableSkipKeywordsConfig" parameterType="DCTableSkipKeywordsConfig">
+        update dc_table_skip_keywords_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="keyWord != null">key_word = #{keyWord},</if>
+            <if test="tableType != null">table_type = #{tableType},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDCTableSkipKeywordsConfigById" parameterType="Long">
+        delete from dc_table_skip_keywords_config where id = #{id}
+    </delete>
+
+    <delete id="deleteDCTableSkipKeywordsConfigByIds" parameterType="String">
+        delete from dc_table_skip_keywords_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectSkipKeyWordsByTableId" resultType="string">
+        select  key_word from dc_table_skip_keywords_config where table_id is null and del_flag &lt;&gt; 2
+        <if test="tableId != null">
+            union all
+            select  key_word from dc_table_skip_keywords_config where table_id = #{tableId} and del_flag &lt;&gt; 2
+        </if>
+        <if test="tableType != null">
+            union all
+            select  key_word from dc_table_skip_keywords_config where table_type = #{tableType} and del_flag &lt;&gt; 2
+        </if>
+    </select>
+</mapper>

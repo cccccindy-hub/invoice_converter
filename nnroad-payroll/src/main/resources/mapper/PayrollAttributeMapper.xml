@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.payroll.mapper.PayrollAttributeMapper">
+    
+    <resultMap type="PayrollAttribute" id="PayrollAttributeResult">
+        <result property="id"    column="id"    />
+        <result property="otherTableId"    column="other_table_id"    />
+        <result property="fieldParentId"    column="field_parent_id"    />
+        <result property="fieldName"    column="field_name"    />
+        <result property="fieldFormula"    column="field_formula"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="searchable"    column="searchable"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="baseTableId"    column="base_table_id"    />
+        <result property="header"    column="header"    />
+    </resultMap>
+
+    <sql id="selectPayrollAttributeVo">
+        select id, other_table_id, field_parent_id, field_name, field_formula, sort_order, searchable, create_by, create_time, update_by, update_time, base_table_id, header from payroll_attribute
+    </sql>
+
+    <select id="selectPayrollAttributeList" parameterType="PayrollAttribute" resultMap="PayrollAttributeResult">
+        <include refid="selectPayrollAttributeVo"/>
+        <where>  
+            <if test="otherTableId != null "> and other_table_id = #{otherTableId}</if>
+            <if test="fieldParentId != null "> and field_parent_id = #{fieldParentId}</if>
+            <if test="fieldName != null  and fieldName != ''"> and field_name like concat('%', #{fieldName}, '%')</if>
+            <if test="fieldFormula != null  and fieldFormula != ''"> and field_formula = #{fieldFormula}</if>
+            <if test="sortOrder != null "> and sort_order = #{sortOrder}</if>
+            <if test="searchable != null "> and searchable = #{searchable}</if>
+            <if test="baseTableId != null "> and base_table_id = #{baseTableId}</if>
+            <if test="header != null "> and header = #{header}</if>
+        </where>
+        order by sort_order
+    </select>
+    
+    <select id="selectPayrollAttributeById" parameterType="Long" resultMap="PayrollAttributeResult">
+        <include refid="selectPayrollAttributeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPayrollAttribute" parameterType="PayrollAttribute" useGeneratedKeys="true" keyProperty="id">
+        insert into payroll_attribute
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="otherTableId != null">other_table_id,</if>
+            <if test="fieldParentId != null">field_parent_id,</if>
+            <if test="fieldName != null">field_name,</if>
+            <if test="fieldFormula != null">field_formula,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="searchable != null">searchable,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="baseTableId != null">base_table_id,</if>
+            <if test="header != null">header,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="otherTableId != null">#{otherTableId},</if>
+            <if test="fieldParentId != null">#{fieldParentId},</if>
+            <if test="fieldName != null">#{fieldName},</if>
+            <if test="fieldFormula != null">#{fieldFormula},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="searchable != null">#{searchable},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="baseTableId != null">#{baseTableId},</if>
+            <if test="header != null">#{header},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePayrollAttribute" parameterType="PayrollAttribute">
+        update payroll_attribute
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="otherTableId != null">other_table_id = #{otherTableId},</if>
+            <if test="fieldParentId != null">field_parent_id = #{fieldParentId},</if>
+            <if test="fieldName != null">field_name = #{fieldName},</if>
+            <if test="fieldFormula != null">field_formula = #{fieldFormula},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="searchable != null">searchable = #{searchable},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="baseTableId != null">base_table_id = #{baseTableId},</if>
+            <if test="header != null">header = #{header},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePayrollAttributeById" parameterType="Long">
+        delete from payroll_attribute where id = #{id}
+    </delete>
+
+    <delete id="deletePayrollAttributeByIds" parameterType="String">
+        delete from payroll_attribute where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
