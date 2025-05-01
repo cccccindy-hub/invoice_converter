@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.vendor.mapper.SysVendorMapper">
+    
+    <resultMap type="SysVendor" id="SysVendorResult">
+        <result property="id"    column="id"    />
+        <result property="vendorName"    column="Vendor_name"    />
+        <result property="location"    column="location"    />
+        <result property="contactPersonName"    column="Contact_Person_Name"    />
+        <result property="contactPersonPhone"    column="Contact_Person_Phone"    />
+        <result property="contactPersonEmail"    column="Contact_Person_Email"    />
+        <result property="companyWebsite"    column="Company_Website"    />
+        <result property="companyPhone"    column="Company_Phone"    />
+        <result property="companyEmail"    column="Company_Email"    />
+        <result property="officeCity"    column="Office_City"    />
+        <result property="vendorActive"    column="vendor_active"    />
+        <result property="startDate"    column="Start_Date"    />
+        <result property="endDate"    column="End_Date"    />
+        <result property="extraData"    column="extra_data"  typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler"  />
+        <result property="createdAt"    column="created_at"    />
+        <result property="modifiedAt"    column="modified_at"    />
+    </resultMap>
+
+    <resultMap type="String" id="SysLocationResult">
+        <result property="location"    column="location"    />
+    </resultMap>
+
+    <sql id="selectSysVendorVo">
+        select v.id, Vendor_name, location, Contact_Person_Name, Contact_Person_Phone, Contact_Person_Email, Company_Website, Company_Phone, Company_Email, Office_City, vendor_active, Start_Date, End_Date, extra_data, created_at, modified_at from sys_vendor as v
+    </sql>
+
+    <select id="selectSysVendorList" parameterType="SysVendor" resultMap="SysVendorResult">
+        <include refid="selectSysVendorVo"/>
+        <where>
+            <if test="id != null"> and id = #{vendorId}</if>
+            <if test="vendorName != null  and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="location != null  and location != ''"> and location = #{location}</if>
+            <if test="contactPersonName != null  and contactPersonName != ''"> and contact_person_name like concat('%', #{contactPersonName}, '%')</if>
+            <if test="contactPersonPhone != null  and contactPersonPhone != ''"> and contact_person_phone = #{contactPersonPhone}</if>
+            <if test="contactPersonEmail != null  and contactPersonEmail != ''"> and contact_person_email = #{contactPersonEmail}</if>
+            <if test="companyWebsite != null  and companyWebsite != ''"> and company_website = #{companyWebsite}</if>
+            <if test="companyPhone != null  and companyPhone != ''"> and company_phone = #{companyPhone}</if>
+            <if test="companyEmail != null  and companyEmail != ''"> and company_email = #{companyEmail}</if>
+            <if test="officeCity != null  and officeCity != ''"> and office_city = #{officeCity}</if>
+            <if test="vendorActive != null "> and vendor_active = #{vendorActive}</if>
+            <if test="startDate != null "> and start_Date = #{startDate, jdbcType=DATE}</if>
+            <if test="endDate != null "> and end_Date = #{endDate, jdbcType=DATE}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="extraData != null and extraData.size() > 0">
+                <!-- Loop over the extraData map -->
+                <foreach collection="extraData.entrySet()" index="key" item="element" >
+                    <if test="element.type == 'nested'">
+                        <foreach collection="element.value" index="childKey" item="childElement">
+                            <if test="childElement != null and childElement != ''">
+                                AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.\"${key}\".\"${childKey}\"')) LIKE CONCAT('%', #{childElement}, '%')
+                            </if>
+                        </foreach>
+                    </if>
+                    <if test="element.type == 'regular'">
+                        <if test="element.value != null and element.value != ''">
+                            AND JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.\"${key}\"')) LIKE CONCAT('%', #{element.value}, '%')
+                        </if>
+                    </if>
+                </foreach>
+            </if>
+        </where>
+        GROUP BY v.id
+    </select>
+    
+    <select id="selectSysVendorById" parameterType="Long" resultMap="SysVendorResult">
+        <include refid="selectSysVendorVo"/>
+        where v.id = #{id}
+    </select>
+
+    <select id="getVendorByCountries" parameterType="java.util.List" resultMap="SysVendorResult">
+        SELECT *
+        FROM sys_vendor
+        <where>
+            <if test="countries[0] != null and countries.size() > 0">
+                AND location IN
+                <foreach item="country" collection="countries" open="(" separator="," close=")">
+                    #{country}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY sys_vendor.vendor_name
+    </select>
+
+   <insert id="insertSysVendor" parameterType="SysVendor" useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO sys_vendor (
+	        vendor_name,
+	        location,
+	        contact_person_name,
+	        contact_person_phone,
+	        contact_person_email,
+	        company_website,
+	        company_phone,
+	        company_email,
+	        office_city,
+	        vendor_active,
+	        start_date,
+	        end_date,
+	        created_at,
+	        modified_at,
+	        extra_data
+	    ) VALUES (
+	        #{vendorName},
+	        #{location},
+	        #{contactPersonName},
+	        #{contactPersonPhone},
+	        #{contactPersonEmail},
+	        #{companyWebsite},
+	        #{companyPhone},
+	        #{companyEmail},
+	        #{officeCity},
+	        #{vendorActive},
+	        #{startDate},
+	        #{endDate},
+	        #{createdAt},
+	        #{modifiedAt},
+	        #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+	    );
+	</insert>
+
+    <update id="updateSysVendor" parameterType="SysVendor">
+	    UPDATE sys_vendor
+	    SET
+	        vendor_name = #{vendorName},
+	        location = #{location},
+	        contact_person_name = #{contactPersonName},
+	        contact_person_phone = #{contactPersonPhone},
+	        contact_person_email = #{contactPersonEmail},
+	        company_website = #{companyWebsite},
+	        company_phone = #{companyPhone},
+	        company_email = #{companyEmail},
+	        office_city = #{officeCity},
+	        vendor_active = #{vendorActive},
+	        start_date = #{startDate},
+	        end_date = #{endDate},
+	        created_at = #{createdAt},
+	        modified_at = #{modifiedAt},
+	        extra_data = #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+	    WHERE id = #{id}
+	</update>
+
+    <delete id="deleteSysVendorById" parameterType="Long">
+        delete from sys_vendor where id = #{id}
+    </delete>
+
+    <delete id="deleteSysVendorByIds" parameterType="String">
+        delete from sys_vendor where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <select id="getVendorByClientId" parameterType="Long" resultMap="SysVendorResult">
+       SELECT DISTINCT v.*
+	   FROM sys_vendor v
+	   JOIN sys_employee e ON v.id = e.vendor_id
+	   WHERE e.client_id = #{clientId}
+    </select>
+
+    <select id="getVendorRegions"  resultMap="SysLocationResult">
+        SELECT DISTINCT location FROM sys_vendor;
+    </select>
+
+    <delete id="deleteVendorBusinessType" parameterType="Long">
+        DELETE FROM vendor_business_type WHERE vendor_id = #{vendorId};
+    </delete>
+
+    <insert id="insertVendorBusinessType" parameterType="map">
+        INSERT INTO vendor_business_type (vendor_id, business_type_id) VALUES (#{vendorId}, #{businessTypeId})
+    </insert>
+
+    <update id="deactivateSysVendorById">
+        UPDATE sys_vendor
+        SET vendor_active = 0
+        WHERE id = #{id};
+    </update>
+</mapper>

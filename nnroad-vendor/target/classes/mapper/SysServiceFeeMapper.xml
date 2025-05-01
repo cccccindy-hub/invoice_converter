@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nnroad.vendor.mapper.SysServiceFeeMapper">
+    
+    <resultMap type="SysServiceFee" id="SysServiceFeeResult">
+        <result property="id"    column="id"    />
+        <result property="clientId"    column="client_id"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="vendorName" column="vendor_name" /> 
+    	<result property="clientName" column="client_name" />
+        <result property="currency"    column="currency"    />
+        <result property="oneTimeSetupType"    column="one_time_setup_type"    />
+        <result property="oneTimeSetupValue"    column="one_time_setup_value"    />
+        <result property="oneTimeSetupUnit"    column="one_time_setup_unit"    />
+        <result property="recurringManagementType"    column="recurring_management_type"    />
+        <result property="recurringManagementValue"    column="recurring_management_value"    />
+        <result property="recurringManagementUnit"    column="recurring_management_unit"    />
+        <result property="minimumChargeType"    column="minimum_charge_type"    />
+        <result property="minimumChargeValue"    column="minimum_charge_value"    />
+        <result property="minimumChargeUnit"    column="minimum_charge_unit"    />
+        <result property="depositType"    column="deposit_type"    />
+        <result property="depositValue"    column="deposit_value"    />
+        <result property="depositUnit"    column="deposit_unit"    />
+        <result property="serviceType"    column="service_type"    />
+        <result property="other"    column="other"    />
+        <result property="extraData"    column="extra_data"  typeHandler = "com.nnroad.framework.datasource.JsonTypeHandler"  />
+    </resultMap>
+
+    <sql id="selectSysServiceFeeVo">
+        select id, client_id, vendor_id, currency, one_time_setup_type, one_time_setup_value, one_time_setup_unit, recurring_management_type, recurring_management_value, recurring_management_unit, minimum_charge_type, minimum_charge_value, minimum_charge_unit, deposit_type, deposit_value, deposit_unit, service_type, other, extra_data from sys_service_fee
+    </sql>
+
+    <select id="selectSysServiceFeeList" parameterType="SysServiceFee" resultMap="SysServiceFeeResult">
+        SELECT s.*, c.client_name, v.vendor_name
+	    FROM sys_service_fee s
+	    JOIN sys_vendor v ON s.vendor_id = v.id
+	    LEFT JOIN sys_client c ON s.client_id = c.id
+        <where>  
+            <if test="clientId != null "> and client_id = #{clientId}</if>
+            <if test="vendorId != null "> and vendor_id = #{vendorId}</if>
+            <if test="currency != null  and currency != ''"> and currency = #{currency}</if>
+            <if test="oneTimeSetupType != null  and oneTimeSetupType != ''"> and one_time_setup_type = #{oneTimeSetupType}</if>
+            <if test="oneTimeSetupValue != null "> and one_time_setup_value = #{oneTimeSetupValue}</if>
+            <if test="oneTimeSetupUnit != null  and oneTimeSetupUnit != ''"> and one_time_setup_unit = #{oneTimeSetupUnit}</if>
+            <if test="recurringManagementType != null  and recurringManagementType != ''"> and recurring_management_type = #{recurringManagementType}</if>
+            <if test="recurringManagementValue != null "> and recurring_management_value = #{recurringManagementValue}</if>
+            <if test="recurringManagementUnit != null  and recurringManagementUnit != ''"> and recurring_management_unit = #{recurringManagementUnit}</if>
+            <if test="minimumChargeType != null  and minimumChargeType != ''"> and minimum_charge_type = #{minimumChargeType}</if>
+            <if test="minimumChargeValue != null "> and minimum_charge_value = #{minimumChargeValue}</if>
+            <if test="minimumChargeUnit != null  and minimumChargeUnit != ''"> and minimum_charge_unit = #{minimumChargeUnit}</if>
+            <if test="depositType != null  and depositType != ''"> and deposit_type = #{depositType}</if>
+            <if test="depositValue != null "> and deposit_value = #{depositValue}</if>
+            <if test="depositUnit != null  and depositUnit != ''"> and deposit_unit = #{depositUnit}</if>
+            <if test="serviceType != null  and serviceType != ''"> and service_type = #{serviceType}</if>
+            <if test="other != null  and other != ''"> and other = #{other}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysServiceFeeById" parameterType="Long" resultMap="SysServiceFeeResult">
+        <include refid="selectSysServiceFeeVo"/>
+        where id = #{id}
+    </select>
+
+	   <insert id="insertSysServiceFee" parameterType="SysServiceFee" useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO sys_service_fee (
+	        client_id,
+	        vendor_id,
+	        currency,
+	        one_time_setup_type,
+	        one_time_setup_value,
+	        one_time_setup_unit,
+	        recurring_management_type,
+	        recurring_management_value,
+	        recurring_management_unit,
+	        minimum_charge_type,
+	        minimum_charge_value,
+	        minimum_charge_unit,
+	        deposit_type,
+	        deposit_value,
+	        deposit_unit,
+	        service_type,
+	        other
+	    ) VALUES (
+	        #{clientId},
+	        #{vendorId},
+	        #{currency},
+	        #{oneTimeSetupType},
+	        #{oneTimeSetupValue},
+	        #{oneTimeSetupUnit},
+	        #{recurringManagementType},
+	        #{recurringManagementValue},
+	        #{recurringManagementUnit},
+	        #{minimumChargeType},
+	        #{minimumChargeValue},
+	        #{minimumChargeUnit},
+	        #{depositType},
+	        #{depositValue},
+	        #{depositUnit},
+	        #{serviceType},
+	        #{other}
+	        #{extraData, typeHandler=com.nnroad.framework.datasource.JsonTypeHandler}
+	    );
+	</insert>
+   
+
+   	<update id="updateSysServiceFee" parameterType="SysServiceFee">
+	    UPDATE sys_service_fee
+	    SET
+	        client_id = #{clientId},
+	        vendor_id = #{vendorId},
+	        currency = #{currency},
+	        one_time_setup_type = #{oneTimeSetupType},
+	        one_time_setup_value = #{oneTimeSetupValue},
+	        one_time_setup_unit = #{oneTimeSetupUnit},
+	        recurring_management_type = #{recurringManagementType},
+	        recurring_management_value = #{recurringManagementValue},
+	        recurring_management_unit = #{recurringManagementUnit},
+	        minimum_charge_type = #{minimumChargeType},
+	        minimum_charge_value = #{minimumChargeValue},
+	        minimum_charge_unit = #{minimumChargeUnit},
+	        deposit_type = #{depositType},
+	        deposit_value = #{depositValue},
+	        deposit_unit = #{depositUnit},
+	        service_type = #{serviceType},
+	        other = #{other}
+	    WHERE id = #{id};
+	</update>
+   	
+
+    <delete id="deleteSysServiceFeeById" parameterType="Long">
+        delete from sys_service_fee where id = #{id}
+    </delete>
+
+    <delete id="deleteSysServiceFeeByIds" parameterType="String">
+        delete from sys_service_fee where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
