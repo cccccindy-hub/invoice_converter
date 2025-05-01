@@ -1,0 +1,153 @@
+<!-- 公式 -->
+<template>
+    <el-form v-if="form?.config" label-width="120px" ref="formRef" :rules="rules" :model="form" :disabled="_isView">
+        <el-row>
+            <el-col :span="4">
+                <el-form-item label="使用公式">
+                    <el-switch v-model="form.config.useFormula" @change="onUseFormulaChange" />
+                </el-form-item>
+            </el-col>
+            <el-col :span="4" v-if="form.config.useFormula && form.config.formula">
+                <el-form-item label="可录入">
+                    <el-tooltip content="项目设置为可录入后，公式会在工资表初始化时计算一次，后续不再计算，如有录入值，以用户录为准。" placement="top">
+                        <el-switch v-model="form.config.formula.resultEditAble"/>
+                    </el-tooltip>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <template v-if="form.config.useFormula">
+            <el-row>
+                <el-col :span="24" style="padding: 10px;color: coral;">
+                    <el-form-item label="公式描述" prop="config.formula.desc">
+                        <el-input v-model="form.config.formula!.desc" :rows="2" type="textarea"
+                            placeholder="公式的计算过程,用于显示给客户看。" />
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="编辑公式" v-if="hasRole('sysItemFormulaEdit')">
+                    <el-switch v-model="showFormulsExpression"/>
+            </el-form-item>
+            <!-- 公式配置 -->
+            <template v-if="showFormulsExpression && originItems.length > 0" >
+                <el-row>
+                    <el-col :span="6">
+                        <el-form-item prop="config.formula.type" label-width="0">
+                            <el-radio-group v-model="form.config.formula!.type" size="large"
+                                @change="onFormulaTypeChange">
+                                <el-radio-button label="expression">公式</el-radio-button>
+                                <el-radio-button label="script">脚本</el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col v-if="form.id && form.config.formula?.updateDescAt" :span="12">
+                        <el-form-item label="我确认公式与描述同步" label-width="200">
+                            <el-switch v-model="form.config.formula!.confirmSync" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item v-if="form.config.formula?.type == 'expression'" label-width="0">
+                    <EditFormula :itemId="form.id" :originItems="originItems"
+                        v-model:expression="form.config.formula.expression"
+                        v-model:item-ids="form.config.formula.itemIds" />
+                </el-form-item>
+                <el-form-item v-if="form.config.formula?.type == 'script'" label-width="0">
+                    <EditScript :originItems="originItems" v-model:script="form.config.formula.script"
+                        v-model:item-ids="form.config.formula.itemIds" />
+                </el-form-item>
+            </template>
+        </template>
+    </el-form>
+</template>
+<script lang="ts" setup>
+import { IItem } from '@/interface';
+import { FormInstance, FormRules } from 'element-plus';
+import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import { isView } from '../provides';
+import { itemService } from '@/service';
+import { EditFormula,EditScript} from '@keyiis/formula-editor'
+import {hasRole} from '@/tools'
+
+const props = defineProps<{
+    modelValue: IItem;
+}>();
+const _isView = inject(isView)
+const formRef = ref<FormInstance>();
+const form = ref<IItem>();
+const rules = reactive<FormRules>({
+    "config.formula.desc":[
+        { required: true, message: '请输入公式描述', trigger: 'blur' }
+    ],
+});
+const emit = defineEmits(['update:modelValue']);
+
+onMounted(() => {
+    form.value = props.modelValue;
+    // window.addEventListener('keydown', handleKeydown);
+});
+onBeforeUnmount(() => {
+    // window.removeEventListener('keydown', handleKeydown);
+})
+const showFormulsExpression = ref(false);
+const originItems = ref<IItem[]>([]);
+// function handleKeydown(event:any){
+//     // console.log(isDev,event);
+//     if (event.ctrlKey && event.shiftKey && event.key === 'F') {
+//         // Your code to handle the key combination here
+//         // console.log('Control + F was pressed');
+//         showFormulsExpression.value=!showFormulsExpression.value;
+//         if(originItems.value.length==0){
+//             itemService.list({}).then(rst=>{
+//                 originItems.value=(rst as IItem[]).filter(r=>r.id!=form.value?.id);
+//             })
+//         }
+//     }
+// }
+watch(
+    showFormulsExpression, 
+    (newVal, oldVal) => {
+        console.log(newVal, oldVal)
+        if(newVal && originItems.value.length==0){
+            itemService.list({}).then(rst=>{
+                originItems.value=(rst as IItem[]).filter(r=>r.id!=form.value?.id);
+            });
+        }
+    }
+)
+
+function onUseFormulaChange(ev:any){
+    console.log("onUseFormulaChange",ev)
+    if(form.value?.config){
+        if(ev){
+            form.value.config.userInput!.inherit=false;
+        }else{
+            form.value.config.formula={};
+        }
+    }
+}
+function onFormulaTypeChange(ev:any){
+    console.log("onFormulaTypeChange",ev);
+}
+
+watch(
+    () => props.modelValue, 
+    (newVal, oldVal) => {
+        console.log("watch formula props.modelValue",newVal, oldVal)
+    }
+)
+watch(
+    form, 
+    (newVal, oldVal) => {
+        console.log("watch formula form",newVal, oldVal)
+        emit("update:modelValue",newVal)
+    }
+)
+
+async function validate(){
+    await formRef.value?.validate();
+    emit('update:modelValue', form.value);
+}
+
+defineExpose({
+    validate
+})
+</script>

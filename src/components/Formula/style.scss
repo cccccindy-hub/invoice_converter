@@ -1,0 +1,133 @@
+.set-formula-frame {
+    color: initial;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    border: 1.5px solid #dcdfe6;
+    border-radius: 4px;
+    height: 300px;
+    .items-pannel {
+        width: 250px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-right: 1.5px solid #dcdfe6;
+
+        .search-ipt{
+            display: flex;
+            align-items: center;
+            // border: 1px solid transparent;
+            box-sizing: border-box;
+            height: 33px;
+            // :focus-within{
+            //     border: 1px solid #409EFF;
+            // }
+            input{
+                flex:1;
+                padding-left: 5px;
+                border: 0;
+                outline: none;
+                font-size: 16px;
+            }
+            .clear-btn{
+                height: 18px;
+                width: 18px;
+                border: 1.5px solid #9E9E9E;
+                border-radius: 50%;
+                font-size: 5px;
+                font-weight: bold;
+                color: #9E9E9E;
+                margin-right: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                user-select: none;
+                cursor: pointer;
+            }
+        }
+
+        .sitems {
+            flex: 1;
+            overflow-y: auto;
+            border-top: 1.5px solid #dcdfe6;
+            text-align: left;
+
+            .sitem {
+                user-select: none;
+                padding: 5px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+
+                :deep(.el-icon) {
+                    font-size: 20px;
+                    padding: 0;
+                    color: #409EFF;
+                }
+                .previous{
+                    display: none;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    color:#F56C6C;
+                }
+            }
+
+            .sitem:not(:last-child) {
+                border-bottom: 1px solid #eee;
+            }
+
+            .sitem:hover {
+                background: #eee;
+                .previous{
+                    display:block !important;
+                }
+            }
+
+            .item-name {
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+    }
+
+    .formula-tip{
+        border-radius: 4px;
+        font-size: 5px;
+        background: #409EFF;
+        color: #fff;
+        padding: 0 5px;
+        line-height: 18px;
+    }
+    .formula-pannel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 400px;
+        .formula-hedaer {
+            display: flex;
+            height: 33px;
+            border-bottom: 1.5px solid #dcdfe6;
+            align-items: center;
+            padding: 0px 10px;
+            .formula-hedaer-btns {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                >* {
+                    // height: 25px;
+                    cursor: pointer;
+                    margin-left: 10px;
+                    font-size: 20px;
+                }
+            }
+        }
+        .script-content{
+            text-align: initial;
+            flex:1;
+            overflow: auto;
+        }
+    }
+}
